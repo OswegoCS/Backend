@@ -1,0 +1,84 @@
+package com.csc380.codepeerreview.models;
+
+import org.springframework.data.annotation.Id;
+
+public class Comment {
+
+    @Id
+    private int id;
+    private int postId;
+    private int userId;
+    private String screenName;
+    private String content;
+    private String date;
+
+    public Comment() {
+        super();
+    }
+
+    public Comment(String content, String date) {
+        this.content = content;
+        this.date = date;
+    }
+
+    public Comment(int id, String content, String date) {
+        this.id = id;
+        this.content = content;
+        this.date = date;
+    }
+
+    public Comment(int id, String screenName, String content, String date) {
+        this.id = id;
+        this.content = content;
+        this.date = date;
+    }
+
+    public String getScreenName() {
+        return screenName;
+    }
+
+    public void setScreenName(String screenName) {
+        this.screenName = screenName;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getPostId() {
+        return postId;
+    }
+
+    public void setPostId(int postId) {
+        this.postId = postId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+}
