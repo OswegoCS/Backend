@@ -28,9 +28,16 @@ import com.csc380.codepeerreview.repositories.mappers.IdRowMapper;
 public class PostDaoImplementation implements PostDao {
 
     private final String SELECT_ALL = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id";
+
     private final String SELECT_ALL_IDS = "SELECT id FROM posts";
+
     private final String SELECT_BY_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE posts.id = :post_id";
+
     private final String INSERT_POST = "INSERT INTO posts (title, content, publish_date, code, user_id) VALUES (:title, :content, :publish_date, :code, (SELECT id FROM users WHERE screen_name = :screen_name)) RETURNING id";
+
+    private final String UPDATE_POST = "UPDATE posts SET title = :title, content = :content, code = :code, publish_date = :publish_date WHERE id = :id";
+
+    private final String DELETE_POST = "DELETE FROM posts WHERE id = :id";
 
     NamedParameterJdbcTemplate template;
 
@@ -57,8 +64,6 @@ public class PostDaoImplementation implements PostDao {
 
     @Override
     public int insertPost(Post post) {
-
-        System.out.println(INSERT_POST);
         SqlParameterSource param = new MapSqlParameterSource().addValue("screen_name", post.getScreenName())
                 .addValue("title", post.getTitle()).addValue("content", post.getTitle())
                 .addValue("publish_date", post.getDate()).addValue("code", post.getCode());
@@ -68,15 +73,20 @@ public class PostDaoImplementation implements PostDao {
         return id;
     }
 
-    /*
-     * public List<Post> findReportedPosts() {
-     * 
-     * 
-     * }
-     * 
-     * 
-     * 
-     * }
-     */
+    @Override
+    public void updatePost(Post post) {
+        SqlParameterSource param = new MapSqlParameterSource().addValue("title", post.getTitle())
+                .addValue("content", post.getTitle()).addValue("publish_date", post.getDate())
+                .addValue("code", post.getCode()).addValue("id", post.getId());
+
+        template.update(UPDATE_POST, param);
+
+    }
+
+    @Override
+    public void deletePost(Integer id) {
+        SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
+        template.update(DELETE_POST, param);
+    }
 
 }

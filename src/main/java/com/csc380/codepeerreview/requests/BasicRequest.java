@@ -2,8 +2,8 @@ package com.csc380.codepeerreview.requests;
 
 public abstract class BasicRequest {
 
-    public int id;
-    public String screenName;
+    private int id;
+    private String screenName;
 
     public BasicRequest() {
         super();

@@ -13,15 +13,6 @@ public class CreatePostRequest extends BasicRequest {
         super();
     }
 
-    public CreatePostRequest(int id, String screenName, String title, String content, String date, String code) {
-        this.id = id;
-        this.screenName = screenName;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.code = code;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -60,14 +51,6 @@ public class CreatePostRequest extends BasicRequest {
 
     public void setFile(String file) {
         this.file = file;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
 }

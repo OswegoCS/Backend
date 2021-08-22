@@ -10,8 +10,8 @@ import com.csc380.codepeerreview.models.Comment;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
-//import com.csc380.codepeerreview.repositories.dao.UserRepository;
 import com.csc380.codepeerreview.requests.CreatePostRequest;
+import com.csc380.codepeerreview.requests.EditPostRequest;
 import com.csc380.codepeerreview.responses.CreatePostResponse;
 import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -56,18 +58,6 @@ public class PostController {
 
         return response;
     }
-    /*
-     * @GetMapping(path = "/posts/flagged/{flag}") public List<Post>
-     * getPostsByFlagged(@PathVariable("flag") String boolStr) {
-     * 
-     * List<Post> posts; if (boolStr.equalsIgnoreCase("false")) { posts =
-     * postRepo.findByFlagged(false); Collections.reverse(posts); return posts;
-     * 
-     * } else { posts = postRepo.findByFlagged(true); Collections.reverse(posts);
-     * return posts; }
-     * 
-     * }
-     */
 
     // Returns a Post with the given id
     @GetMapping(path = "/posts/id/{id}")
@@ -96,18 +86,13 @@ public class PostController {
     }
 
     @PostMapping("/posts/create")
-    public CreatePostResponse createPost(@RequestBody CreatePostRequest request) throws Exception {
+    public CreatePostResponse createPost(@RequestBody CreatePostRequest request) {
         String title = request.getTitle();
         String content = request.getContent();
         String code = request.getCode();
         String screenName = request.getScreenName();
-        String file = request.getFile();
         String date = LocalDateTime.now().toString().substring(0, 10);
-        // TO-DO: Validation of inputs. Language filter
-        if (file != null) {
-            code = file;
-        }
-        // Set the code
+
         if (code.equals("") || code == null) {
             code = "No code was provided for this post";
         }
@@ -131,39 +116,38 @@ public class PostController {
         return response;
     }
 
-    /*
-     * @PutMapping("/posts/report/{id}") public Post reportPost(@PathVariable("id")
-     * Integer id) {
-     * 
-     * Post reportedPost = postRepo.findById(id);
-     * 
-     * reportedPost.setReported(true);
-     * 
-     * postRepo.save(reportedPost);
-     * 
-     * return reportedPost; }
-     */
+    @PutMapping("/posts/edit")
+    public void createPost(@RequestBody EditPostRequest request) {
+        int id = request.getId();
+        String title = request.getTitle();
+        String content = request.getContent();
+        String code = request.getCode();
+        String screenName = request.getScreenName();
+        String date = LocalDateTime.now().toString().substring(0, 10);
 
-    /*
-     * @PutMapping("/posts/restore/{id}") public Post
-     * restorePost(@PathVariable("id") String id) {
-     * 
-     * Post reportedPost = postRepo.findById(new ObjectId(id));
-     * 
-     * reportedPost.setReported(false);
-     * 
-     * postRepo.save(reportedPost);
-     * 
-     * return reportedPost; }
-     * 
-     * 
-     * @DeleteMapping("posts/id/{id}") public Post deletePost(@PathVariable("id")
-     * String id) {
-     * 
-     * Post deletePost = postRepo.deleteById(new ObjectId(id)); return deletePost;
-     * 
-     * }
-     */
+        if (code.equals("") || code == null) {
+            code = "No code was provided for this post";
+        }
+
+        code = code.replaceAll("(\\\\r\\\\n|\\\\n)", "\n").replaceAll("(\\\\\")", "\"").replaceAll("(\\\\\\\\)",
+                "\\\\");
+
+        Post post = new Post();
+        post.setId(id);
+        post.setTitle(title);
+        post.setScreenName(screenName);
+        post.setContent(content);
+        post.setCode(code);
+        post.setDate(date);
+
+        postRepo.updatePost(post);
+    }
+
+    @DeleteMapping("/posts/delete/{id}")
+    public void deletePost(@PathVariable("id") Integer id) {
+        postRepo.deletePost(id);
+    }
+
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
     public class ResourceNotFoundException extends RuntimeException {
         /**
@@ -175,13 +159,4 @@ public class PostController {
 
         }
     }
-    /*
-     * @PutMapping(value = "/posts/{id}") public Post editPost(@PathVariable Integer
-     * id, @RequestBody Post post) { Post editedPost = postRepo.findById(id);
-     * 
-     * editedPost.setUser(post.getUser()); editedPost.setTitle(post.getTitle());
-     * editedPost.setContent(post.getContent()); editedPost.setDate(post.getDate());
-     * 
-     * return editedPost; }
-     */
 }

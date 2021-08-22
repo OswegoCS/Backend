@@ -15,9 +15,11 @@ public interface PostDao {
 
     // void deleteById(Integer id);
 
-    // void updatePost(Post post);
+    void updatePost(Post post);
 
     int insertPost(Post post);
+
+    void deletePost(Integer id);
 
     List<String> getIds();
 
