@@ -22,6 +22,8 @@ public class CommentDaoImpl implements CommentDao {
     // final private String SELECT_BY_USER_ID = "SELECT id, post_id, content,
     // publish_date FROM comments WHERE post_id = :post_id";
     final private String SELECT_BY_REPORTED = "SELECT * FROM reported_comments WHERE reported = TRUE";
+    final private String INSERT_COMMENT = "INSERT INTO comments (post_id, content, publish_date, user_id) VALUES (:postid, :content, :publish_date, (SELECT id FROM users WHERE screen_name = :screen_name))";
+    final private String DELETE_COMMENT = "DELETE FROM posts WHERE id = :id";
 
     private NamedParameterJdbcTemplate template;
 
@@ -44,6 +46,26 @@ public class CommentDaoImpl implements CommentDao {
     public List<Comment> findByReported() {
 
         return template.query(SELECT_BY_REPORTED, BeanPropertyRowMapper.newInstance(Comment.class));
+
+    }
+
+    @Override
+    public void insertComment(Comment comment) {
+
+        SqlParameterSource param = new MapSqlParameterSource().addValue("post_id", comment.getPostId())
+                .addValue("content", comment.getContent()).addValue("publish_date", comment.getDate())
+                .addValue("screen_name", comment.getScreenName());
+
+        template.update(INSERT_COMMENT, param);
+
+    }
+
+    @Override
+    public void deleteComment(Integer id) {
+
+        SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
+
+        template.update(DELETE_COMMENT, param);
 
     }
 

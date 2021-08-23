@@ -10,6 +10,7 @@ import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.requests.CreateCommentRequest;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,14 +26,21 @@ public class CommentsController {
     @Resource
     public CommentDao commentRepo;
 
-    @GetMapping(value = "/comments/create")
-    public void createComment(CreateCommentRequest request) {
+    @PostMapping(value = "/comments/create")
+    public void createComment(@RequestBody CreateCommentRequest request) {
 
         Comment comment = new Comment();
         comment.setContent(request.getComment());
         comment.setPostId(request.getPostId());
         comment.setScreenName(request.getScreenName());
         comment.setDate(LocalDateTime.now().toString().substring(0, 10));
+        commentRepo.insertComment(comment);
+
+    }
+
+    @DeleteMapping(value = "/comments/id/{id}")
+    public void findById(@PathVariable Integer id) {
+        commentRepo.deleteComment(id);
 
     }
 
