@@ -1,10 +1,7 @@
 package com.csc380.codepeerreview.models;
 
-import org.springframework.data.annotation.Id;
-
 public class Comment {
 
-    @Id
     private int id;
     private int postId;
     private int userId;
