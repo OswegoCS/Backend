@@ -9,4 +9,8 @@ public interface CommentDao {
 
     List<Comment> findByReported();
 
+    void insertComment(Comment comment);
+
+    void deleteComment(Integer id);
+
 }
