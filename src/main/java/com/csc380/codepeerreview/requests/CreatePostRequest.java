@@ -4,7 +4,6 @@ public class CreatePostRequest extends BasicRequest {
 
     private String title;
     private String content;
-    private String course;
     private String date;
     private String code;
     private String file;

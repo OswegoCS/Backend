@@ -1,10 +1,7 @@
 package com.csc380.codepeerreview.models;
 
-import org.springframework.data.annotation.Id;
-
 public class Post {
 
-    @Id
     private int id;
     private String screenName;
     private String title;

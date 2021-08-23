@@ -1,92 +1,60 @@
 package com.csc380.codepeerreview.models;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "Users")
 public class User {
-    // associate users by username
 
-    // Mongo ID
-    @Id
-    private ObjectId id;
+    private int id;
 
     // User info
-    private String nameLast;
-    private String nameFirst;
+    private String firstName;
+    private String lastName;
     private String email;
-    private int schoolID;
-    private String username;
+    private String screenName;
+    private String createdDate;
     private String type;
     private String course;
-    //private String studentGrade;
 
     public User() {
         super();
     }
 
-    // Constructor without the _id from Mongo makes it easier to parse students from
-    // CSV
-    public User(String nameLast, String nameFirst, String email, int schoolID, String type) {
-        super();
-        this.schoolID = schoolID;
-        this.nameFirst = nameFirst;
-        this.nameLast = nameLast;
-        this.email = email;
-        this.type = type;
+    public int getId() {
+        return id;
     }
 
-    public String makeUsername(String email) {
-        return email.substring(0, email.indexOf('@'));
-    }
-
-    public String getId() {
-        return this.id.toHexString();
-    }
-
-    public void setId(ObjectId id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public int getSchoolID() {
-        return this.schoolID;
+    public String getScreenName() {
+        return screenName;
     }
 
-    public void setSchoolID(int schoolID) {
-        this.schoolID = schoolID;
+    public void setScreenName(String screenName) {
+        this.screenName = screenName;
     }
 
-    public String getNameFirst() {
-        return this.nameFirst;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setNameFirst(String nameFirst) {
-        this.nameFirst = nameFirst;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getNameLast() {
-        return this.nameLast;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setNameLast(String nameLast) {
-        this.nameLast = nameLast;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getUsername() {
-        return this.username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public void setType(String type) {
@@ -94,7 +62,7 @@ public class User {
     }
 
     public String getType() {
-        return this.type;
+        return type;
     }
 
     public void setCourse(String course) {
@@ -102,6 +70,6 @@ public class User {
     }
 
     public String getCourse() {
-        return this.course;
+        return course;
     }
 }

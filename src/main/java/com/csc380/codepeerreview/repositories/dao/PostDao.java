@@ -7,13 +7,9 @@ public interface PostDao {
 
     List<Post> findAll();
 
-    // List<Post> findByCourse(String course);
-
-    // List<Post> findReportedPosts();
-
     Post findById(Integer id);
 
-    // void deleteById(Integer id);
+    List<Post> findByUserId(Integer id);
 
     void updatePost(Post post);
 
@@ -23,5 +19,4 @@ public interface PostDao {
 
     List<String> getIds();
 
-    // void executeUpdateEmployee(Post post);
 }

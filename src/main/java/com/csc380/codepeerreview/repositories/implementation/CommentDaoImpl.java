@@ -1,22 +1,11 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.csc380.codepeerreview.models.Comment;
@@ -30,10 +19,11 @@ public class CommentDaoImpl implements CommentDao {
     // publish_date, FROM comments WHERE post_id = :post_id";
     final private String SELECT_BY_POST_ID = "SELECT comments.id, post_id, content, publish_date, users.screen_name FROM comments INNER JOIN users ON comments.user_id=users.id WHERE comments.post_id=:post_id";
 
-    final private String SELECT_BY_USER_ID = "SELECT id, post_id, content, publish_date FROM comments WHERE post_id = :post_id";
+    // final private String SELECT_BY_USER_ID = "SELECT id, post_id, content,
+    // publish_date FROM comments WHERE post_id = :post_id";
     final private String SELECT_BY_REPORTED = "SELECT * FROM reported_comments WHERE reported = TRUE";
 
-    NamedParameterJdbcTemplate template;
+    private NamedParameterJdbcTemplate template;
 
     public CommentDaoImpl(NamedParameterJdbcTemplate template) {
         this.template = template;
@@ -42,7 +32,7 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public List<Comment> findByPostId(Integer id) {
         List<Comment> comments = null;
-        SqlParameterSource param = new MapSqlParameterSource("post_id", id);
+        // SqlParameterSource param = new MapSqlParameterSource("post_id", id);
 
         // comments = template.query(SELECT_BY_POST_ID, param,
         // BeanPropertyRowMapper.newInstance(Comment.class));
