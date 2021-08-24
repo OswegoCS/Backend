@@ -9,7 +9,6 @@ public class User {
     private String lastName;
     private String email;
     private String screenName;
-    private String createdDate;
     private String type;
     private String course;
 
