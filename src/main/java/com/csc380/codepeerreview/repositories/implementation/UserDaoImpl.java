@@ -8,13 +8,10 @@ import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
 import com.csc380.codepeerreview.repositories.mappers.UserRowMapper;
 
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.lang.Nullable;
 
 @Repository
 public class UserDaoImpl implements UserDao {
