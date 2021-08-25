@@ -1,7 +1,7 @@
 package com.csc380.codepeerreview.controllers;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import javax.annotation.Resource;
 
@@ -39,7 +39,6 @@ public class CommentsController {
         comment.setContent(request.getComment());
         comment.setPostId(request.getPostId());
         comment.setScreenName(request.getScreenName());
-        comment.setDate(LocalDateTime.now().toString().substring(0, 10));
         commentRepo.insertComment(comment);
 
     }

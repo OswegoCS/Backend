@@ -5,18 +5,18 @@ import com.csc380.codepeerreview.models.User;
 
 public class CreateStudentsRequest extends BasicRequest {
 
-    private List<User> students;
+    private List<User> users;
 
     public CreateStudentsRequest() {
         super();
     }
 
-    public List<User> getStudents() {
-        return students;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setStudents(List<User> students) {
-        this.students = students;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
 }

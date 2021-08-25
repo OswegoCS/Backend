@@ -4,8 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.csc380.codepeerreview.models.Post;
 import org.springframework.jdbc.core.RowMapper;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class PostRowMapper implements RowMapper<Post> {
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy 'at' h:mm:ss a");
 
     @Override
     public Post mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -15,7 +19,7 @@ public class PostRowMapper implements RowMapper<Post> {
         post.setContent(rs.getString("content"));
         post.setCode(rs.getString("code"));
         post.setScreenName(rs.getString("screen_name"));
-        post.setDate(rs.getString("publish_date"));
+        post.setDate(formatter.format(rs.getObject("publish_date", LocalDateTime.class)));
 
         return post;
     }

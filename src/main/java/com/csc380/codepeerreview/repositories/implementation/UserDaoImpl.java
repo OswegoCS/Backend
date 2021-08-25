@@ -34,7 +34,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void insertUsers(List<User> students) {
+    public void insertUsers(List<User> users, String type) {
 
         StringBuilder query = new StringBuilder(insertUsers);
         String firstName = "first_name?";
@@ -45,14 +45,14 @@ public class UserDaoImpl implements UserDao {
         Map<String, Object> headers = new HashMap<String, Object>();
         SqlParameterSource param;
 
-        for (int i = 0; i < students.size(); i++) {
+        for (int i = 0; i < users.size(); i++) {
             StringBuilder index = new StringBuilder().append(i);
 
-            headers.put(firstName.replace("?", index.toString()), students.get(i).getFirstName());
-            headers.put(lastName.replace("?", index.toString()), students.get(i).getLastName());
-            headers.put(email.replace("?", index.toString()), students.get(i).getEmail());
-            headers.put(screenName.replace("?", index.toString()), students.get(i).getEmail().split("@")[0]);
-            headers.put(role.replace("?", index.toString()), "student");
+            headers.put(firstName.replace("?", index.toString()), users.get(i).getFirstName());
+            headers.put(lastName.replace("?", index.toString()), users.get(i).getLastName());
+            headers.put(email.replace("?", index.toString()), users.get(i).getEmail());
+            headers.put(screenName.replace("?", index.toString()), users.get(i).getEmail().split("@")[0]);
+            headers.put(role.replace("?", index.toString()), type);
 
             query.append("(");
             query.append(":").append(firstName.replace("?", index.toString()));
@@ -61,7 +61,7 @@ public class UserDaoImpl implements UserDao {
             query.append(", ").append(":").append(screenName.replace("?", index.toString()));
             query.append(", ").append(":").append(role.replace("?", index.toString()));
             query.append(") ");
-            query.append(i < (students.size() - 1) ? ", " : "");
+            query.append(i < (users.size() - 1) ? ", " : "");
 
         }
 

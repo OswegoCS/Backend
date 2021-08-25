@@ -1,6 +1,8 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
 import java.util.List;
+import java.time.Instant;
+import java.sql.Timestamp;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,11 +24,11 @@ public class PostDaoImpl implements PostDao {
 
     private final String SELECT_ALL = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id";
 
-    private final String INSERT_POST = "INSERT INTO posts (title, content, publish_date, code, user_id) VALUES (:title, :content, :publish_date, :code, (SELECT id FROM users WHERE screen_name = :screen_name)) RETURNING id";
+    private final String INSERT_POST = "INSERT INTO posts (title, content, code, user_id, publish_date) VALUES (:title, :content, :code, (SELECT id FROM users WHERE screen_name = :screen_name), :publish_date) RETURNING id";
 
-    private final String UPDATE_POST = "UPDATE posts SET title = :title, content = :content, code = :code, publish_date = :publish_date WHERE id = :id";
+    private final String UPDATE_POST = "UPDATE posts SET title = :title, content = :content, code = :code WHERE id = :id";
 
-    private final String SELECT_BY_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE posts.id = :post_id";
+    private final String SELECT_BY_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE posts.id = :id";
 
     private final String SELECT_BY_USER_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE users.id = :user_id";
 
@@ -49,12 +51,15 @@ public class PostDaoImpl implements PostDao {
     @Override
     public Post findById(Integer id) {
         Post post = null;
-        post = template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("post_id", id), new PostRowMapper());
+
+        post = template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), new PostRowMapper());
         return post;
     }
 
     @Override
     public List<Post> findByUserId(Integer id) {
+        System.out.println(Instant.now());
+
         List<Post> posts = null;
         posts = template.query(SELECT_BY_USER_ID, new MapSqlParameterSource("user_id", id), new PostRowMapper());
         return posts;
@@ -64,7 +69,7 @@ public class PostDaoImpl implements PostDao {
     public int insertPost(Post post) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("screen_name", post.getScreenName())
                 .addValue("title", post.getTitle()).addValue("content", post.getTitle())
-                .addValue("publish_date", post.getDate()).addValue("code", post.getCode());
+                .addValue("code", post.getCode()).addValue("publish_date", Timestamp.from(Instant.now()));
 
         Integer id = template.queryForObject(INSERT_POST, param, Integer.class);
 
@@ -74,8 +79,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public void updatePost(Post post) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("title", post.getTitle())
-                .addValue("content", post.getTitle()).addValue("publish_date", post.getDate())
-                .addValue("code", post.getCode()).addValue("id", post.getId());
+                .addValue("content", post.getTitle()).addValue("code", post.getCode()).addValue("id", post.getId());
 
         template.update(UPDATE_POST, param);
 

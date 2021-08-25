@@ -42,11 +42,19 @@ public class UserController {
         return response;
     }
 
-    @PostMapping(path = "users/create")
+    @PostMapping(path = "users/create/students")
     public void createStudents(@RequestBody CreateStudentsRequest request) {
 
-        List<User> students = request.getStudents();
+        List<User> students = request.getUsers();
 
-        userRepo.insertUsers(students);
+        userRepo.insertUsers(students, "students");
+    }
+
+    @PostMapping(path = "users/create/instructors")
+    public void createInstructors(@RequestBody CreateStudentsRequest request) {
+
+        List<User> instructors = request.getUsers();
+
+        userRepo.insertUsers(instructors, "instructor");
     }
 }
