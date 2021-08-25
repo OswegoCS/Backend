@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.csc380.codepeerreview.models.Comment;
+import com.csc380.codepeerreview.models.Likes;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
@@ -48,11 +49,9 @@ public class PostController {
             posts = postRepo.findAll();
             Collections.reverse(posts);
             response.setMessage("success");
-            response.setStatusCode(200);
 
         } catch (Exception e) {
             response.setMessage("failure caused by " + e.getMessage());
-            response.setStatusCode(500);
         }
         response.setPosts(posts);
 
@@ -68,9 +67,13 @@ public class PostController {
         Post post = postRepo.findById(id);
         if (post == null) {
             response.setMessage("No posts with id " + id);
-            response.setStatusCode(500);
         }
         comments = commentRepo.findByPostId(id);
+
+        for (Comment comment : comments) {
+            List<String> usersWhoLiked = commentRepo.getLikes(comment.getId());
+            comment.setLikes(new Likes(usersWhoLiked));
+        }
         response.setPost(post);
         response.setComments(comments);
         return response;

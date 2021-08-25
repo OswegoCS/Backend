@@ -8,6 +8,7 @@ public class Comment {
     private String screenName;
     private String content;
     private String date;
+    private Likes likes;
 
     public Comment() {
         super();
@@ -76,6 +77,14 @@ public class Comment {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public Likes getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Likes likes) {
+        this.likes = likes;
     }
 
 }

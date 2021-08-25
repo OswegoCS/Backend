@@ -2,13 +2,11 @@ package com.csc380.codepeerreview.repositories.dao;
 
 import java.util.List;
 import com.csc380.codepeerreview.models.Comment;
-import com.csc380.codepeerreview.responses.GetCommentLikesResponse;
+import com.csc380.codepeerreview.models.ReportedComment;
 
 public interface CommentDao {
 
     List<Comment> findByPostId(Integer id);
-
-    List<Comment> findByReported();
 
     void insertComment(Comment comment);
 
@@ -18,6 +16,8 @@ public interface CommentDao {
 
     void likeComment(Integer commentId, Integer userId);
 
-    GetCommentLikesResponse getLikes(Integer id);
+    List<String> getLikes(Integer id);
+
+    List<ReportedComment> getReportedComments();
 
 }

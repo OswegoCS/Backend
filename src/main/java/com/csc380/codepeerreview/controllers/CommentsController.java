@@ -1,15 +1,18 @@
 package com.csc380.codepeerreview.controllers;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.annotation.Resource;
 
 import com.csc380.codepeerreview.models.Comment;
+import com.csc380.codepeerreview.models.ReportedComment;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.requests.CreateCommentRequest;
 import com.csc380.codepeerreview.requests.LikeCommentRequest;
 import com.csc380.codepeerreview.requests.ReportContentRequest;
 import com.csc380.codepeerreview.responses.GetCommentLikesResponse;
+import com.csc380.codepeerreview.responses.GetReportedCommentsResponse;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,8 +63,21 @@ public class CommentsController {
     @GetMapping(value = "comments/likes/{id}")
     public GetCommentLikesResponse getLikes(@PathVariable Integer id) {
 
-        GetCommentLikesResponse response;
-        response = commentRepo.getLikes(id);
+        GetCommentLikesResponse response = new GetCommentLikesResponse();
+        List<String> users = commentRepo.getLikes(id);
+        response.setCommentId(id);
+        response.setUsers(users);
+        response.setLikes(users.size());
+        return response;
+
+    }
+
+    @GetMapping(value = "comments/reported")
+    public GetReportedCommentsResponse getReportedComments() {
+
+        GetReportedCommentsResponse response = new GetReportedCommentsResponse();
+        List<ReportedComment> comments = commentRepo.getReportedComments();
+        response.setComments(comments);
         return response;
 
     }

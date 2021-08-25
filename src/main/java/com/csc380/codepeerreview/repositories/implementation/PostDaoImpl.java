@@ -16,19 +16,19 @@ import com.csc380.codepeerreview.repositories.mappers.IdRowMapper;
 @Repository
 public class PostDaoImpl implements PostDao {
 
-    private final String SELECT_ALL = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id";
+    private final String DELETE_POST = "DELETE FROM posts WHERE id = :id";
 
     private final String SELECT_ALL_IDS = "SELECT id FROM posts";
 
-    private final String SELECT_BY_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE posts.id = :post_id";
-
-    private final String SELECT_BY_USER_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE users.id = :user_id";
+    private final String SELECT_ALL = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id";
 
     private final String INSERT_POST = "INSERT INTO posts (title, content, publish_date, code, user_id) VALUES (:title, :content, :publish_date, :code, (SELECT id FROM users WHERE screen_name = :screen_name)) RETURNING id";
 
     private final String UPDATE_POST = "UPDATE posts SET title = :title, content = :content, code = :code, publish_date = :publish_date WHERE id = :id";
 
-    private final String DELETE_POST = "DELETE FROM posts WHERE id = :id";
+    private final String SELECT_BY_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE posts.id = :post_id";
+
+    private final String SELECT_BY_USER_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE users.id = :user_id";
 
     private NamedParameterJdbcTemplate template;
 
