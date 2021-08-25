@@ -1,9 +1,12 @@
 package com.csc380.codepeerreview.responses;
 
+import java.util.List;
+
 public class GetCommentLikesResponse extends BasicResponse {
 
     private int commentId;
-    private int userId;
+    private List<String> users;
+    private int likes;
 
     public GetCommentLikesResponse() {
         super();
@@ -17,12 +20,20 @@ public class GetCommentLikesResponse extends BasicResponse {
         this.commentId = commentId;
     }
 
-    public int getUserId() {
-        return userId;
+    public List<String> getUsers() {
+        return users;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUsers(List<String> users) {
+        this.users = users;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
     }
 
 }

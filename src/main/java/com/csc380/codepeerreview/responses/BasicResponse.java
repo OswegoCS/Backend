@@ -8,10 +8,6 @@ public class BasicResponse {
     public BasicResponse() {
     }
 
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
     public void setMessage(String message) {
         this.message = message;
     }
