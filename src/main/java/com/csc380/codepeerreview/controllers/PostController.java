@@ -1,8 +1,11 @@
 package com.csc380.codepeerreview.controllers;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.Instant;
 
 import javax.annotation.Resource;
 
@@ -94,7 +97,6 @@ public class PostController {
         String content = request.getContent();
         String code = request.getCode();
         String screenName = request.getScreenName();
-        String date = LocalDateTime.now().toString().substring(0, 10);
 
         if (code.equals("") || code == null) {
             code = "No code was provided for this post";
@@ -109,7 +111,6 @@ public class PostController {
         post.setScreenName(screenName);
         post.setContent(content);
         post.setCode(code);
-        post.setDate(date);
 
         int id = postRepo.insertPost(post);
 
@@ -120,13 +121,12 @@ public class PostController {
     }
 
     @PutMapping("/posts/edit")
-    public void createPost(@RequestBody EditPostRequest request) {
+    public void editPost(@RequestBody EditPostRequest request) {
         int id = request.getId();
         String title = request.getTitle();
         String content = request.getContent();
         String code = request.getCode();
         String screenName = request.getScreenName();
-        String date = LocalDateTime.now().toString().substring(0, 10);
 
         if (code.equals("") || code == null) {
             code = "No code was provided for this post";
@@ -141,7 +141,6 @@ public class PostController {
         post.setScreenName(screenName);
         post.setContent(content);
         post.setCode(code);
-        post.setDate(date);
 
         postRepo.updatePost(post);
     }

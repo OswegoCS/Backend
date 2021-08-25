@@ -8,6 +8,6 @@ public interface UserDao {
 
     User findById(Integer id);
 
-    void insertUsers(List<User> users);
+    void insertUsers(List<User> users, String type);
 
 }

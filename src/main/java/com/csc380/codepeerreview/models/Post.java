@@ -1,5 +1,7 @@
 package com.csc380.codepeerreview.models;
 
+import java.time.LocalDate;
+
 public class Post {
 
     private int id;
@@ -12,38 +14,6 @@ public class Post {
 
     public Post() {
         super();
-    }
-
-    public Post(int id, String title, String content, String date, String code) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.code = code;
-    }
-
-    public Post(String title, String content, String date, String code) {
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.code = code;
-    }
-
-    public Post(String screenName, String title, String course, String content, String date, String code) {
-        this.screenName = screenName;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.code = code;
-    }
-
-    public Post(int id, String screenName, String title, String course, String content, String date, String code) {
-        this.id = id;
-        this.screenName = screenName;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.code = code;
     }
 
     public String getScreenName() {

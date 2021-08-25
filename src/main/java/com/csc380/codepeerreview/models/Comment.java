@@ -1,5 +1,7 @@
 package com.csc380.codepeerreview.models;
 
+import java.time.LocalDate;
+
 public class Comment {
 
     private int id;
@@ -12,23 +14,6 @@ public class Comment {
 
     public Comment() {
         super();
-    }
-
-    public Comment(String content, String date) {
-        this.content = content;
-        this.date = date;
-    }
-
-    public Comment(int id, String content, String date) {
-        this.id = id;
-        this.content = content;
-        this.date = date;
-    }
-
-    public Comment(int id, String screenName, String content, String date) {
-        this.id = id;
-        this.content = content;
-        this.date = date;
     }
 
     public String getScreenName() {

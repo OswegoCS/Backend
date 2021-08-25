@@ -4,8 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.csc380.codepeerreview.models.Comment;
 import org.springframework.jdbc.core.RowMapper;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CommentRowMapper implements RowMapper<Comment> {
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy 'at' h:mm:ss a	");
 
     @Override
     public Comment mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -13,7 +17,7 @@ public class CommentRowMapper implements RowMapper<Comment> {
         comment.setId(rs.getInt("id"));
         comment.setPostId(rs.getInt("post_id"));
         comment.setContent(rs.getString("content"));
-        comment.setDate(rs.getString("publish_date"));
+        comment.setDate(formatter.format(rs.getObject("publish_date", LocalDateTime.class)));
         comment.setScreenName(rs.getString("screen_name"));
 
         return comment;

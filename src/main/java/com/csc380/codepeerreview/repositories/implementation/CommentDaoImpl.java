@@ -1,6 +1,8 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
 import java.util.List;
+import java.time.Instant;
+import java.sql.Timestamp;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,9 +19,9 @@ import com.csc380.codepeerreview.repositories.mappers.UserIdRowMapper;
 @Repository
 public class CommentDaoImpl implements CommentDao {
 
-    final private String SELECT_BY_POST_ID = "SELECT comments.id, content, publish_date, users.screen_name FROM comments INNER JOIN users ON comments.user_id=users.id WHERE comments.post_id=:post_id";
+    final private String SELECT_BY_POST_ID = "SELECT post_id, user_id, comments.id, content, publish_date, users.screen_name FROM comments INNER JOIN users ON comments.user_id = users.id WHERE post_id = :post_id";
     final private String SELECT_REPORTED = "SELECT comments.user_id AS authorId, reporter_id AS reporterId, post_id AS postId, comments.id AS commentId, users.screen_name AS author, content, reason, publish_date AS \"date\", (Select screen_name as reporter from users where id = reported_comments.reporter_id) FROM reported_comments INNER JOIN comments ON comments.id = reported_comments.id INNER JOIN users ON comments.user_id = users.id";
-    final private String INSERT_COMMENT = "INSERT INTO comments (post_id, content, publish_date, user_id) VALUES (:postid, :content, :publish_date, (SELECT id FROM users WHERE screen_name = :screen_name))";
+    final private String INSERT_COMMENT = "INSERT INTO comments (post_id, content, user_id, publish_date) VALUES (:postid, :content, (SELECT id FROM users WHERE screen_name = :screen_name), :publish_date)";
     final private String DELETE_COMMENT = "DELETE FROM comments WHERE id = :id";
     final private String REPORT_COMMENT = "INSERT INTO reported_comments (id, reason, reporter_id) VALUES (:id, :reason, :reporter_id)";
     final private String LIKE_COMMENT = "INSERT INTO comment_likes (user_id, comment_id) VALUES (:user_id,:comment_id)";
@@ -42,7 +44,7 @@ public class CommentDaoImpl implements CommentDao {
     public void insertComment(Comment comment) {
 
         SqlParameterSource param = new MapSqlParameterSource().addValue("post_id", comment.getPostId())
-                .addValue("content", comment.getContent()).addValue("publish_date", comment.getDate())
+                .addValue("publish_date", Timestamp.from(Instant.now())).addValue("content", comment.getContent())
                 .addValue("screen_name", comment.getScreenName());
 
         template.update(INSERT_COMMENT, param);
