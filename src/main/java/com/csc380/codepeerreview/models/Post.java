@@ -1,7 +1,5 @@
 package com.csc380.codepeerreview.models;
 
-import java.time.LocalDate;
-
 public class Post {
 
     private int id;

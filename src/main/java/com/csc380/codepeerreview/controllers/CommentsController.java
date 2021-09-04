@@ -1,7 +1,6 @@
 package com.csc380.codepeerreview.controllers;
 
 import java.util.List;
-import java.time.LocalDateTime;
 
 import javax.annotation.Resource;
 
@@ -49,17 +48,17 @@ public class CommentsController {
 
     }
 
-    @PutMapping(value = "comments/report")
+    @PutMapping(value = "/comments/report")
     public void reportComment(@RequestBody ReportContentRequest request) {
         commentRepo.reportComment(request.getId(), request.getReporterId(), request.getReason());
     }
 
-    @PostMapping(value = "comments/like")
+    @PostMapping(value = "/comments/like")
     public void likeComment(@RequestBody LikeCommentRequest request) {
         commentRepo.likeComment(request.getId(), request.getUserId());
     }
 
-    @GetMapping(value = "comments/likes/{id}")
+    @GetMapping(value = "/comments/likes/id/{id}")
     public GetCommentLikesResponse getLikes(@PathVariable Integer id) {
 
         GetCommentLikesResponse response = new GetCommentLikesResponse();
@@ -71,7 +70,7 @@ public class CommentsController {
 
     }
 
-    @GetMapping(value = "comments/reported")
+    @GetMapping(value = "/comments/reported")
     public GetReportedCommentsResponse getReportedComments() {
 
         GetReportedCommentsResponse response = new GetReportedCommentsResponse();

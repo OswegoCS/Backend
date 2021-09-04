@@ -1,11 +1,10 @@
 package com.csc380.codepeerreview.controllers;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.time.LocalDateTime;
-import java.time.Instant;
+import java.util.ArrayList;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Resource;
 
@@ -20,6 +19,7 @@ import com.csc380.codepeerreview.responses.CreatePostResponse;
 import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
+import com.csc380.codepeerreview.responses.SearchPostsResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -43,8 +43,7 @@ public class PostController {
     public CommentDao commentRepo;
 
     @GetMapping(value = "/posts")
-    public GetManyPostsResponse getAllPosts() {
-
+    public GetManyPostsResponse getAllPosts() throws Exception {
         List<Post> posts = null;
         GetManyPostsResponse response = new GetManyPostsResponse();
 
@@ -91,8 +90,26 @@ public class PostController {
         return response;
     }
 
+    // Returns a list of all post ids
+    @GetMapping(path = "/posts/search/{params}")
+    public SearchPostsResponse searchPosts(@PathVariable String params) {
+        SearchPostsResponse response = new SearchPostsResponse();
+        String decodedParams = URLDecoder.decode(params, StandardCharsets.UTF_8).replaceAll("\\p{Punct}", "");
+        List<Post> posts = new ArrayList<Post>();
+        try {
+            posts = postRepo.searchWithParams(decodedParams);
+        } catch (Exception e) {
+            // log the exception
+        }
+
+        response.setQuery(decodedParams);
+        response.setPosts(posts);
+        return response;
+    }
+
     @PostMapping("/posts/create")
     public CreatePostResponse createPost(@RequestBody CreatePostRequest request) {
+        System.out.println(request.getTitle());
         String title = request.getTitle();
         String content = request.getContent();
         String code = request.getCode();
@@ -145,7 +162,7 @@ public class PostController {
         postRepo.updatePost(post);
     }
 
-    @DeleteMapping("/posts/delete/{id}")
+    @DeleteMapping("/posts/delete/id/{id}")
     public void deletePost(@PathVariable("id") Integer id) {
         postRepo.deletePost(id);
     }
@@ -161,4 +178,5 @@ public class PostController {
 
         }
     }
+
 }

@@ -1,16 +1,19 @@
 package com.csc380.codepeerreview.controllers;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.csc380.codepeerreview.repositories.dao.UserDao;
-import com.csc380.codepeerreview.requests.CreateStudentsRequest;
-import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.models.User;
-
+import com.csc380.codepeerreview.repositories.dao.PostDao;
+import com.csc380.codepeerreview.repositories.dao.UserDao;
+import com.csc380.codepeerreview.requests.CreateStudentsRequest;
+import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetProfileResponse;
+import com.csc380.codepeerreview.responses.GetUserValidationResponse;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,18 +34,34 @@ public class UserController {
     public PostDao postRepo;
 
     // Returns a profile of a user
-    @GetMapping(path = "/users/id/{id}")
-    public GetProfileResponse getIds(@PathVariable Integer id) {
+    @GetMapping(path = "/users/profile/{email}")
+    public GetProfileResponse getIds(@PathVariable String email) {
         GetProfileResponse response = new GetProfileResponse();
-
-        User user = userRepo.findById(id);
-        List<Post> posts = postRepo.findByUserId(id);
+        String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+        User user = userRepo.findByEmail(decodedEmail);
+        List<Post> posts = postRepo.findByUserId(user.getId());
         response.setUser(user);
         response.setPosts(posts);
         return response;
     }
 
-    @PostMapping(path = "users/create/students")
+    @GetMapping(path = "/users/ids")
+    public GetIdsResponse getUserIds() {
+        GetIdsResponse response = new GetIdsResponse();
+        response.setIds(userRepo.getUserIds());
+        return response;
+    }
+
+    @GetMapping(path = "/users/validate/{email}")
+    public GetUserValidationResponse validateUser(@PathVariable String email) {
+        GetUserValidationResponse response = new GetUserValidationResponse();
+        String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+        boolean validity = userRepo.findByEmail(decodedEmail) != null ? true : false;
+        response.setValidity(validity);
+        return response;
+    }
+
+    @PostMapping(path = "/users/create/students")
     public void createStudents(@RequestBody CreateStudentsRequest request) {
 
         List<User> students = request.getUsers();
@@ -50,7 +69,7 @@ public class UserController {
         userRepo.insertUsers(students, "students");
     }
 
-    @PostMapping(path = "users/create/instructors")
+    @PostMapping(path = "/users/create/instructors")
     public void createInstructors(@RequestBody CreateStudentsRequest request) {
 
         List<User> instructors = request.getUsers();

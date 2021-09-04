@@ -57,9 +57,6 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		
-
-
 	</dependencies>
 
 	<build>
@@ -69,6 +66,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<finalName>peer_code_review</finalName>
 	</build>
 
 </project>

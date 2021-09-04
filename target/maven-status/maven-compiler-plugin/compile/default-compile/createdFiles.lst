@@ -1,3 +1,4 @@
+com\csc380\codepeerreview\responses\SearchPostsResponse.class
 com\csc380\codepeerreview\controllers\PostController.class
 com\csc380\codepeerreview\models\ReportedComment.class
 com\csc380\codepeerreview\requests\CreatePostRequest.class

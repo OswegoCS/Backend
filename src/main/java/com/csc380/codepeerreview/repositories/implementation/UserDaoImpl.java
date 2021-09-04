@@ -6,17 +6,21 @@ import java.util.Map;
 
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
+import com.csc380.codepeerreview.repositories.mappers.IdRowMapper;
 import com.csc380.codepeerreview.repositories.mappers.UserRowMapper;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private final String SELECT_BY_ID = "SELECT screen_name, first_name, last_name, email FROM users WHERE id = :id";
+    private final String SELECT_BY_ID = "SELECT id, screen_name, first_name, last_name, email FROM users WHERE id = :id";
+    private final String SELECT_BY_EMAIL = "SELECT id, screen_name, first_name, last_name, email FROM users WHERE email = :email";
+    private final String SELECT_ALL_IDS = "SELECT id FROM users";
     private String insertUsers = "INSERT INTO users (first_name, last_name, email, screen_name, role) VALUES ";
 
     private NamedParameterJdbcTemplate template;
@@ -71,4 +75,18 @@ public class UserDaoImpl implements UserDao {
 
     }
 
+    @Override
+    public List<String> getUserIds() {
+        return template.query(SELECT_ALL_IDS, new IdRowMapper());
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        try {
+            return template.queryForObject(SELECT_BY_EMAIL, new MapSqlParameterSource("email", email),
+                    new UserRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
 }

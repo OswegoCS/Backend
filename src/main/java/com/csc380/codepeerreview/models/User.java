@@ -3,8 +3,6 @@ package com.csc380.codepeerreview.models;
 public class User {
 
     private int id;
-
-    // User info
     private String firstName;
     private String lastName;
     private String email;
