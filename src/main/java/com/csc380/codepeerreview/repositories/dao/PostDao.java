@@ -19,4 +19,6 @@ public interface PostDao {
 
     List<String> getIds();
 
+    List<Post> searchWithParams(String params);
+
 }

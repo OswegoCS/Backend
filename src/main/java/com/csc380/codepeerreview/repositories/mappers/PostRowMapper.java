@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public class PostRowMapper implements RowMapper<Post> {
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy 'at' h:mm:ss a");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMM dd 'at' h:mm a");
 
     @Override
     public Post mapRow(ResultSet rs, int arg1) throws SQLException {
