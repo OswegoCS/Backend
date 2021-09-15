@@ -4,3 +4,4 @@
 /.mvn
 /.settings
 /bin
+/pgdata
