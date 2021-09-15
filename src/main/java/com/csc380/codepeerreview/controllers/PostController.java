@@ -1,6 +1,5 @@
 package com.csc380.codepeerreview.controllers;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.net.URLDecoder;
@@ -15,12 +14,15 @@ import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.requests.CreatePostRequest;
 import com.csc380.codepeerreview.requests.EditPostRequest;
-import com.csc380.codepeerreview.responses.CreatePostResponse;
 import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
 import com.csc380.codepeerreview.responses.SearchPostsResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @CrossOrigin
@@ -42,6 +45,9 @@ public class PostController {
     @Resource
     public CommentDao commentRepo;
 
+    @Autowired
+    public ObjectMapper mapper;
+
     @GetMapping(value = "/posts")
     public GetManyPostsResponse getAllPosts() throws Exception {
         List<Post> posts = null;
@@ -49,14 +55,11 @@ public class PostController {
 
         try {
             posts = postRepo.findAll();
-            Collections.reverse(posts);
-            response.setMessage("success");
-
-        } catch (Exception e) {
-            response.setMessage("failure caused by " + e.getMessage());
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts in the database");
         }
-        response.setPosts(posts);
 
+        response.setPosts(posts);
         return response;
     }
 
@@ -65,17 +68,19 @@ public class PostController {
     public GetPostByIdResponse getPostsById(@PathVariable("id") Integer id) {
         GetPostByIdResponse response = new GetPostByIdResponse();
         List<Comment> comments = null;
-
-        Post post = postRepo.findById(id);
-        if (post == null) {
-            response.setMessage("No posts with id " + id);
+        Post post = null;
+        try {
+            post = postRepo.findById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts with id: " + id);
         }
         comments = commentRepo.findByPostId(id);
 
-        for (Comment comment : comments) {
+        comments.forEach(comment -> {
             List<String> usersWhoLiked = commentRepo.getLikes(comment.getId());
             comment.setLikes(new Likes(usersWhoLiked));
-        }
+        });
+
         response.setPost(post);
         response.setComments(comments);
         return response;
@@ -108,8 +113,7 @@ public class PostController {
     }
 
     @PostMapping("/posts/create")
-    public CreatePostResponse createPost(@RequestBody CreatePostRequest request) {
-        System.out.println(request.getTitle());
+    public ObjectNode createPost(@RequestBody CreatePostRequest request) {
         String title = request.getTitle();
         String content = request.getContent();
         String code = request.getCode();
@@ -118,9 +122,6 @@ public class PostController {
         if (code.equals("") || code == null) {
             code = "No code was provided for this post";
         }
-
-        code = code.replaceAll("(\\\\r\\\\n|\\\\n)", "\n").replaceAll("(\\\\\")", "\"").replaceAll("(\\\\\\\\)",
-                "\\\\");
 
         Post post = new Post();
 
@@ -131,10 +132,10 @@ public class PostController {
 
         int id = postRepo.insertPost(post);
 
-        CreatePostResponse response = new CreatePostResponse();
-        response.setId(id);
+        ObjectNode objectNode = mapper.createObjectNode();
+        objectNode.put("id", id);
 
-        return response;
+        return objectNode;
     }
 
     @PutMapping("/posts/edit")
@@ -148,9 +149,6 @@ public class PostController {
         if (code.equals("") || code == null) {
             code = "No code was provided for this post";
         }
-
-        code = code.replaceAll("(\\\\r\\\\n|\\\\n)", "\n").replaceAll("(\\\\\")", "\"").replaceAll("(\\\\\\\\)",
-                "\\\\");
 
         Post post = new Post();
         post.setId(id);

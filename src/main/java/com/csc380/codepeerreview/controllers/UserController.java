@@ -37,7 +37,7 @@ public class UserController {
     @GetMapping(path = "/users/profile/{email}")
     public GetProfileResponse getIds(@PathVariable String email) {
         GetProfileResponse response = new GetProfileResponse();
-        String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+        String decodedEmail = email.replace("%40", "");
         User user = userRepo.findByEmail(decodedEmail);
         List<Post> posts = postRepo.findByUserId(user.getId());
         response.setUser(user);

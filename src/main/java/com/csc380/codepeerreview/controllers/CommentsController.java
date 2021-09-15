@@ -58,18 +58,6 @@ public class CommentsController {
         commentRepo.likeComment(request.getId(), request.getUserId());
     }
 
-    @GetMapping(value = "/comments/likes/id/{id}")
-    public GetCommentLikesResponse getLikes(@PathVariable Integer id) {
-
-        GetCommentLikesResponse response = new GetCommentLikesResponse();
-        List<String> users = commentRepo.getLikes(id);
-        response.setCommentId(id);
-        response.setUsers(users);
-        response.setLikes(users.size());
-        return response;
-
-    }
-
     @GetMapping(value = "/comments/reported")
     public GetReportedCommentsResponse getReportedComments() {
 

@@ -16,6 +16,7 @@ public class CommentRowMapper implements RowMapper<Comment> {
         Comment comment = new Comment();
         comment.setId(rs.getInt("id"));
         comment.setPostId(rs.getInt("post_id"));
+        comment.setUserId(rs.getInt("user_id"));
         comment.setContent(rs.getString("content"));
         comment.setDate(formatter.format(rs.getObject("publish_date", LocalDateTime.class)));
         comment.setScreenName(rs.getString("screen_name"));

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Likes {
 
-    private int quantity;
+    private int count;
     private List<String> users;
 
     public Likes() {
@@ -13,7 +13,7 @@ public class Likes {
 
     public Likes(List<String> users) {
         this.users = users;
-        this.quantity = users.size();
+        this.count = users.size();
     }
 
     public List<String> getUsers() {
@@ -24,12 +24,12 @@ public class Likes {
         this.users = users;
     }
 
-    public int getLikes() {
-        return quantity;
+    public int getCount() {
+        return count;
     }
 
-    public void setLikes(int likes) {
-        this.quantity = likes;
+    public void setCount(int count) {
+        this.count = count;
     }
 
 }
