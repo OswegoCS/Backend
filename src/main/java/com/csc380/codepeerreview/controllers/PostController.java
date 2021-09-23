@@ -119,12 +119,7 @@ public class PostController {
         String code = request.getCode();
         String screenName = request.getScreenName();
 
-        if (code.equals("") || code == null) {
-            code = "No code was provided for this post";
-        }
-
         Post post = new Post();
-
         post.setTitle(title);
         post.setScreenName(screenName);
         post.setContent(content);
@@ -145,10 +140,6 @@ public class PostController {
         String content = request.getContent();
         String code = request.getCode();
         String screenName = request.getScreenName();
-
-        if (code.equals("") || code == null) {
-            code = "No code was provided for this post";
-        }
 
         Post post = new Post();
         post.setId(id);

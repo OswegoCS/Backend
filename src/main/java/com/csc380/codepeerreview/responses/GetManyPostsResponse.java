@@ -8,12 +8,6 @@ public class GetManyPostsResponse extends BasicResponse {
 
     public List<Post> posts;
 
-    public GetManyPostsResponse(int statusCode, String message, List<Post> posts) {
-        this.statusCode = statusCode;
-        this.message = message;
-        this.posts = posts;
-    }
-
     public GetManyPostsResponse() {
     }
 

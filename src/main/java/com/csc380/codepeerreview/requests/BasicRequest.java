@@ -5,10 +5,6 @@ public abstract class BasicRequest {
     private int id;
     private String screenName;
 
-    public BasicRequest() {
-        super();
-    }
-
     public int getId() {
         return id;
     }

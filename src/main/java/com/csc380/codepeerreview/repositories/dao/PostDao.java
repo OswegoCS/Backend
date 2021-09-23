@@ -21,4 +21,6 @@ public interface PostDao {
 
     List<Post> searchWithParams(String params);
 
+    List<String> getLikes(String email);
+
 }

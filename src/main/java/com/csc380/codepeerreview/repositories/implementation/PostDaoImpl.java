@@ -9,6 +9,7 @@ import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.repositories.mappers.IdRowMapper;
 import com.csc380.codepeerreview.repositories.mappers.PostRowMapper;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -32,6 +33,8 @@ public class PostDaoImpl implements PostDao {
     private final String SELECT_BY_USER_ID = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE users.id = :user_id";
 
     private final String SELECT_POSTS_LIKE = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE content LIKE :params";
+
+    private final String SELECT_LIKES = "SELECT screen_name FROM post_likes INNER JOIN users ON users.id = post_likes.user_id WHERE id = :id";
 
     private NamedParameterJdbcTemplate template;
 
@@ -96,6 +99,11 @@ public class PostDaoImpl implements PostDao {
     public List<Post> searchWithParams(String params) {
         return template.query(SELECT_POSTS_LIKE, new MapSqlParameterSource("params", "%" + params + "%"),
                 new PostRowMapper());
+    }
+
+    @Override
+    public List<String> getLikes(String email) {
+        return template.query("", (rs, rowNum) -> (rs.getString("screen_name")));
     }
 
 }

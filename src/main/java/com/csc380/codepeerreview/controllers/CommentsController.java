@@ -10,7 +10,6 @@ import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.requests.CreateCommentRequest;
 import com.csc380.codepeerreview.requests.LikeCommentRequest;
 import com.csc380.codepeerreview.requests.ReportContentRequest;
-import com.csc380.codepeerreview.responses.GetCommentLikesResponse;
 import com.csc380.codepeerreview.responses.GetReportedCommentsResponse;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -65,6 +64,11 @@ public class CommentsController {
         List<ReportedComment> comments = commentRepo.getReportedComments();
         response.setComments(comments);
         return response;
+
+    }
+
+    @PutMapping(value = "/comments/edit/{id}")
+    public void editComment(@PathVariable String id) {
 
     }
 
