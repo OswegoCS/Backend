@@ -45,13 +45,6 @@ public class UserController {
         return response;
     }
 
-    @GetMapping(path = "/users/ids")
-    public GetIdsResponse getUserIds() {
-        GetIdsResponse response = new GetIdsResponse();
-        response.setIds(userRepo.getUserIds());
-        return response;
-    }
-
     @GetMapping(path = "/users/validate/{email}")
     public GetUserValidationResponse validateUser(@PathVariable String email) {
         GetUserValidationResponse response = new GetUserValidationResponse();

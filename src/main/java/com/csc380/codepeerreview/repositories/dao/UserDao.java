@@ -11,7 +11,4 @@ public interface UserDao {
     User findByEmail(String email);
 
     void insertUsers(List<User> users, String type);
-
-    List<String> getUserIds();
-
 }

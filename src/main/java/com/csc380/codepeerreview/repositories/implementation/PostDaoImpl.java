@@ -2,11 +2,14 @@ package com.csc380.codepeerreview.repositories.implementation;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
+import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
-import com.csc380.codepeerreview.repositories.mappers.IdRowMapper;
 import com.csc380.codepeerreview.repositories.mappers.PostRowMapper;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -34,7 +37,7 @@ public class PostDaoImpl implements PostDao {
 
     private final String SELECT_POSTS_LIKE = "SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name FROM posts INNER JOIN users ON posts.user_id = users.id WHERE content LIKE :params";
 
-    private final String SELECT_LIKES = "SELECT screen_name FROM post_likes INNER JOIN users ON users.id = post_likes.user_id WHERE id = :id";
+    private final String SELECT_LIKES = "SELECT user_id AS id, screen_name AS screenName FROM post_likes INNER JOIN users ON users.id = post_likes.user_id WHERE post_id = :post_id";
 
     private NamedParameterJdbcTemplate template;
 
@@ -49,7 +52,7 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public List<String> getIds() {
-        return template.query(SELECT_ALL_IDS, new IdRowMapper());
+        return template.query(SELECT_ALL_IDS, (rs, rowNum) -> String.valueOf(rs.getInt("id")));
     }
 
     @Override
@@ -102,8 +105,9 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public List<String> getLikes(String email) {
-        return template.query("", (rs, rowNum) -> (rs.getString("screen_name")));
+    public List<LikeInfo> getLikes(int id) {
+        SqlParameterSource param = new MapSqlParameterSource().addValue("post_id", id);
+        return template.query(SELECT_LIKES, param, BeanPropertyRowMapper.newInstance(LikeInfo.class));
     }
 
 }

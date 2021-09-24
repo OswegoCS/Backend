@@ -1,5 +1,7 @@
 package com.csc380.codepeerreview.models;
 
+import java.util.List;
+
 public class Post {
 
     private int id;
@@ -9,9 +11,32 @@ public class Post {
     private String date;
     private String code;
     private String course;
+    private List<LikeInfo> likes;
 
     public Post() {
-        super();
+    }
+
+    public Post(int id, String screenName, String title, String content, String code) {
+        this.id = id;
+        this.screenName = screenName;
+        this.title = title;
+        this.content = content;
+        this.code = code;
+    }
+
+    public Post(String screenName, String title, String content, String code) {
+        this.screenName = screenName;
+        this.title = title;
+        this.content = content;
+        this.code = code;
+    }
+
+    public List<LikeInfo> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<LikeInfo> likes) {
+        this.likes = likes;
     }
 
     public String getScreenName() {
