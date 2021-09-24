@@ -57,19 +57,12 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Post findById(Integer id) {
-        Post post = null;
-
-        post = template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), new PostRowMapper());
-        return post;
+        return template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), new PostRowMapper());
     }
 
     @Override
     public List<Post> findByUserId(Integer id) {
-        System.out.println(Instant.now());
-
-        List<Post> posts = null;
-        posts = template.query(SELECT_BY_USER_ID, new MapSqlParameterSource("user_id", id), new PostRowMapper());
-        return posts;
+        return template.query(SELECT_BY_USER_ID, new MapSqlParameterSource("user_id", id), new PostRowMapper());
     }
 
     @Override
@@ -78,9 +71,7 @@ public class PostDaoImpl implements PostDao {
                 .addValue("title", post.getTitle()).addValue("content", post.getTitle())
                 .addValue("code", post.getCode()).addValue("publish_date", Timestamp.from(Instant.now()));
 
-        Integer id = template.queryForObject(INSERT_POST, param, Integer.class);
-
-        return id;
+        return template.queryForObject(INSERT_POST, param, Integer.class);
     }
 
     @Override
@@ -89,7 +80,6 @@ public class PostDaoImpl implements PostDao {
                 .addValue("content", post.getTitle()).addValue("code", post.getCode()).addValue("id", post.getId());
 
         template.update(UPDATE_POST, param);
-
     }
 
     @Override

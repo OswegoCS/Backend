@@ -1,15 +1,13 @@
 package com.csc380.codepeerreview.controllers;
 
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Resource;
 
 import com.csc380.codepeerreview.models.Comment;
-import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Likes;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
@@ -20,8 +18,6 @@ import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
 import com.csc380.codepeerreview.responses.SearchPostsResponse;
-import com.csc380.codepeerreview.util.DatabaseHelper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -29,14 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -73,6 +68,7 @@ public class PostController {
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts with id: " + id);
         }
+        post.setLikes(postRepo.getLikes(post.getId()));
         comments = commentRepo.findByPostId(id);
 
         comments.forEach(comment -> {
