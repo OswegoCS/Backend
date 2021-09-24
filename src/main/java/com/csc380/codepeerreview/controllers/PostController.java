@@ -55,6 +55,10 @@ public class PostController {
 
         try {
             posts = postRepo.findAll();
+            posts.forEach(post -> {
+                post.setLikes(postRepo.getLikes(post.getId()));
+            });
+
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts in the database");
         }
