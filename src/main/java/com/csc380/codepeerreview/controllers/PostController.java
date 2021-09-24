@@ -1,6 +1,7 @@
 package com.csc380.codepeerreview.controllers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Resource;
 
 import com.csc380.codepeerreview.models.Comment;
+import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Likes;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
@@ -18,6 +20,7 @@ import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
 import com.csc380.codepeerreview.responses.SearchPostsResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -49,20 +52,11 @@ public class PostController {
     public ObjectMapper mapper;
 
     @GetMapping(value = "/posts")
-    public GetManyPostsResponse getAllPosts() throws Exception {
+    public GetManyPostsResponse getAllPosts() {
         List<Post> posts = null;
         GetManyPostsResponse response = new GetManyPostsResponse();
-
-        try {
-            posts = postRepo.findAll();
-            posts.forEach(post -> {
-                post.setLikes(postRepo.getLikes(post.getId()));
-            });
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts in the database");
-        }
-
+        posts = postRepo.findAll();
+        posts.forEach(post -> post.setLikes(postRepo.getLikes(post.getId())));
         response.setPosts(posts);
         return response;
     }
@@ -118,40 +112,17 @@ public class PostController {
 
     @PostMapping("/posts/create")
     public ObjectNode createPost(@RequestBody CreatePostRequest request) {
-        String title = request.getTitle();
-        String content = request.getContent();
-        String code = request.getCode();
-        String screenName = request.getScreenName();
-
-        Post post = new Post();
-        post.setTitle(title);
-        post.setScreenName(screenName);
-        post.setContent(content);
-        post.setCode(code);
-
+        Post post = new Post(request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
         int id = postRepo.insertPost(post);
-
         ObjectNode objectNode = mapper.createObjectNode();
         objectNode.put("id", id);
-
         return objectNode;
     }
 
     @PutMapping("/posts/edit")
     public void editPost(@RequestBody EditPostRequest request) {
-        int id = request.getId();
-        String title = request.getTitle();
-        String content = request.getContent();
-        String code = request.getCode();
-        String screenName = request.getScreenName();
-
-        Post post = new Post();
-        post.setId(id);
-        post.setTitle(title);
-        post.setScreenName(screenName);
-        post.setContent(content);
-        post.setCode(code);
-
+        Post post = new Post(request.getId(), request.getScreenName(), request.getTitle(), request.getContent(),
+                request.getCode());
         postRepo.updatePost(post);
     }
 
@@ -159,17 +130,4 @@ public class PostController {
     public void deletePost(@PathVariable("id") Integer id) {
         postRepo.deletePost(id);
     }
-
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public class ResourceNotFoundException extends RuntimeException {
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-
-        public ResourceNotFoundException() {
-
-        }
-    }
-
 }

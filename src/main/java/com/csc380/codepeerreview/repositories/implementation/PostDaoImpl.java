@@ -2,8 +2,11 @@ package com.csc380.codepeerreview.repositories.implementation;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
@@ -103,10 +106,9 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public List<User> getLikes(int id) {
+    public List<LikeInfo> getLikes(int id) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("post_id", id);
-
-        return template.query(SELECT_LIKES, param, BeanPropertyRowMapper.newInstance(User.class));
+        return template.query(SELECT_LIKES, param, BeanPropertyRowMapper.newInstance(LikeInfo.class));
     }
 
 }

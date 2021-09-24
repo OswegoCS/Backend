@@ -11,17 +11,31 @@ public class Post {
     private String date;
     private String code;
     private String course;
-    private List<User> likes;
+    private List<LikeInfo> likes;
 
     public Post() {
-        super();
     }
 
-    public List<User> getLikes() {
+    public Post(int id, String screenName, String title, String content, String code) {
+        this.id = id;
+        this.screenName = screenName;
+        this.title = title;
+        this.content = content;
+        this.code = code;
+    }
+
+    public Post(String screenName, String title, String content, String code) {
+        this.screenName = screenName;
+        this.title = title;
+        this.content = content;
+        this.code = code;
+    }
+
+    public List<LikeInfo> getLikes() {
         return likes;
     }
 
-    public void setLikes(List<User> likes) {
+    public void setLikes(List<LikeInfo> likes) {
         this.likes = likes;
     }
 
