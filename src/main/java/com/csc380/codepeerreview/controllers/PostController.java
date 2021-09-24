@@ -20,6 +20,7 @@ import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
 import com.csc380.codepeerreview.responses.SearchPostsResponse;
+import com.csc380.codepeerreview.util.DatabaseHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

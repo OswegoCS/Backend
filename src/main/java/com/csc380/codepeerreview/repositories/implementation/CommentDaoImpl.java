@@ -14,7 +14,6 @@ import com.csc380.codepeerreview.models.Comment;
 import com.csc380.codepeerreview.models.ReportedComment;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.mappers.CommentRowMapper;
-import com.csc380.codepeerreview.repositories.mappers.UserIdRowMapper;
 
 @Repository
 public class CommentDaoImpl implements CommentDao {
@@ -81,7 +80,7 @@ public class CommentDaoImpl implements CommentDao {
     public List<String> getLikes(Integer id) {
         SqlParameterSource param = new MapSqlParameterSource().addValue("comment_id", id);
 
-        return template.query(GET_LIKES, param, new UserIdRowMapper());
+        return template.query(GET_LIKES, param, (rs, rn) -> String.valueOf(rs.getString("screen_name")));
 
     }
 

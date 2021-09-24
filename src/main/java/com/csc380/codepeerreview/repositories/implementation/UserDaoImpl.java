@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
-import com.csc380.codepeerreview.repositories.mappers.IdRowMapper;
 import com.csc380.codepeerreview.repositories.mappers.UserRowMapper;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -73,11 +72,6 @@ public class UserDaoImpl implements UserDao {
 
         template.update(query.toString(), param);
 
-    }
-
-    @Override
-    public List<String> getUserIds() {
-        return template.query(SELECT_ALL_IDS, new IdRowMapper());
     }
 
     @Override

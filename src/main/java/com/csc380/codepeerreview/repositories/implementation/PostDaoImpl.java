@@ -10,7 +10,6 @@ import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
-import com.csc380.codepeerreview.repositories.mappers.IdRowMapper;
 import com.csc380.codepeerreview.repositories.mappers.PostRowMapper;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -53,7 +52,7 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public List<String> getIds() {
-        return template.query(SELECT_ALL_IDS, new IdRowMapper());
+        return template.query(SELECT_ALL_IDS, (rs, rowNum) -> String.valueOf(rs.getInt("id")));
     }
 
     @Override
