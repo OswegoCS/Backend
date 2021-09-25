@@ -17,9 +17,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private final String SELECT_BY_ID = "SELECT id, screen_name, first_name, last_name, email FROM users WHERE id = :id";
-    private final String SELECT_BY_EMAIL = "SELECT id, screen_name, first_name, last_name, email FROM users WHERE email = :email";
-    private String insertUsers = "INSERT INTO users (first_name, last_name, email, screen_name, role) VALUES ";
+    private final String SELECT_BY_ID = """
+    SELECT id, screen_name, first_name, last_name, email 
+    FROM users
+    WHERE id = :id""";
+
+    private final String SELECT_BY_EMAIL = """
+    SELECT id, screen_name, first_name, last_name, email
+    FROM users 
+    WHERE email = :email""";
+
+    private String insertUsers = 
+    "INSERT INTO users (first_name, last_name, email, screen_name, role) VALUES ";
 
     private NamedParameterJdbcTemplate template;
 
@@ -29,7 +38,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findById(Integer id) {
-        return template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), new UserRowMapper());
+        return template.queryForObject(
+            SELECT_BY_ID, new MapSqlParameterSource("id", id), new UserRowMapper());
     }
 
     @Override
@@ -52,14 +62,14 @@ public class UserDaoImpl implements UserDao {
             headers.put(screenName.concat(index), users.get(i).getEmail().split("@")[0]);
             headers.put(role.concat(index), type);
 
-            query.append("(");
-            query.append(":").append(firstName.concat(index));
-            query.append(", ").append(":").append(lastName.concat(index));
-            query.append(", ").append(":").append(email.concat(index));
-            query.append(", ").append(":").append(screenName.concat(index));
-            query.append(", ").append(":").append(role.concat(index));
-            query.append(") ");
-            query.append(i < (users.size() - 1) ? ", " : "");
+            query.append("(")
+            .append(":").append(firstName.concat(index))
+            .append(", ").append(":").append(lastName.concat(index))
+            .append(", ").append(":").append(email.concat(index))
+            .append(", ").append(":").append(screenName.concat(index))
+            .append(", ").append(":").append(role.concat(index))
+            .append(") ")
+            .append(i < (users.size() - 1) ? ", " : "");
         }
 
         param = new MapSqlParameterSource(headers);
@@ -71,8 +81,8 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User findByEmail(String email) {
         try {
-            return template.queryForObject(SELECT_BY_EMAIL, new MapSqlParameterSource("email", email),
-                    new UserRowMapper());
+            return template.queryForObject(
+                SELECT_BY_EMAIL, new MapSqlParameterSource("email", email), new UserRowMapper());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
