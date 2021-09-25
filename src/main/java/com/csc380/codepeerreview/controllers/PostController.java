@@ -94,7 +94,8 @@ public class PostController {
     @GetMapping(path = "/posts/search/{params}")
     public SearchPostsResponse searchPosts(@PathVariable String params) {
         SearchPostsResponse response = new SearchPostsResponse();
-        String decodedParams = URLDecoder.decode(params, StandardCharsets.UTF_8).replaceAll("\\p{Punct}", "");
+        String decodedParams = URLDecoder.decode(params, StandardCharsets.UTF_8)
+            .replaceAll("\\p{Punct}", "");
         List<Post> posts = new ArrayList<Post>();
         try {
             posts = postRepo.searchWithParams(decodedParams);
@@ -109,7 +110,8 @@ public class PostController {
 
     @PostMapping("/posts/create")
     public ObjectNode createPost(@RequestBody CreatePostRequest request) {
-        Post post = new Post(request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
+        Post post = new Post(
+            request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
         int id = postRepo.insertPost(post);
         ObjectNode objectNode = mapper.createObjectNode();
         objectNode.put("id", id);
@@ -118,9 +120,10 @@ public class PostController {
 
     @PutMapping("/posts/edit")
     public void editPost(@RequestBody EditPostRequest request) {
-        Post post = new Post(request.getId(), request.getScreenName(), request.getTitle(), request.getContent(),
-                request.getCode());
+        Post post = new Post(
+            request.getId(), request.getScreenName(), request.getTitle(), request.getContent(),request.getCode());
         postRepo.updatePost(post);
+
     }
 
     @DeleteMapping("/posts/delete/id/{id}")
