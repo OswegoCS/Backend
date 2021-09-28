@@ -12,8 +12,10 @@ import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
 import com.csc380.codepeerreview.requests.CreateStudentsRequest;
 import com.csc380.codepeerreview.responses.GetProfileResponse;
-import com.csc380.codepeerreview.responses.GetUserValidationResponse;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +33,8 @@ public class UserController {
     public UserDao userRepo;
     @Resource
     public PostDao postRepo;
+    @Autowired
+    public ObjectMapper mapper;
 
     // Returns a profile of a user
     @GetMapping(path = "/users/profile/{email}")
@@ -45,12 +49,12 @@ public class UserController {
     }
 
     @GetMapping(path = "/users/validate/{email}")
-    public GetUserValidationResponse validateUser(@PathVariable String email) {
-        GetUserValidationResponse response = new GetUserValidationResponse();
+    public ObjectNode validateUser(@PathVariable String email) {
         String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
         boolean validity = userRepo.findByEmail(decodedEmail) != null ? true : false;
-        response.setValidity(validity);
-        return response;
+        ObjectNode objectNode = mapper.createObjectNode();
+        objectNode.put("validity", validity);
+        return objectNode;
     }
 
     @PostMapping(path = "/users/create/students")

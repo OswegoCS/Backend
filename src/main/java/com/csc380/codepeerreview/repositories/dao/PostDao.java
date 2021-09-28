@@ -1,11 +1,8 @@
 package com.csc380.codepeerreview.repositories.dao;
 
 import java.util.List;
-import java.util.Map;
-
 import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
-import com.csc380.codepeerreview.models.User;
 
 public interface PostDao {
 

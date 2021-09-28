@@ -1,27 +1,13 @@
 package com.csc380.codepeerreview.requests;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter @Setter @NoArgsConstructor
 public class CreateCommentRequest extends BasicRequest {
 
     private String comment;
     private int postId;
 
-    public CreateCommentRequest() {
-        super();
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setId(int postId) {
-        this.postId = postId;
-    }
 }

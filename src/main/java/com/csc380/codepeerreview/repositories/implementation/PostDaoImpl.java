@@ -2,13 +2,10 @@ package com.csc380.codepeerreview.repositories.implementation;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
-import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.repositories.mappers.PostRowMapper;
 
@@ -22,9 +19,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PostDaoImpl implements PostDao {
 
-    private final String DELETE_POST = "DELETE FROM posts WHERE id = :id";
+    private final String DELETE_POST = """
+    DELETE FROM posts
+    WHERE id = :id""";
 
-    private final String SELECT_ALL_IDS = "SELECT id FROM posts";
+    private final String SELECT_ALL_IDS = """
+    SELECT id 
+    FROM posts""";
 
     private final String SELECT_ALL = """
     SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name

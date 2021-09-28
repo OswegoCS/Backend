@@ -4,15 +4,12 @@ import java.util.List;
 
 import com.csc380.codepeerreview.models.Post;
 
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Setter @NoArgsConstructor
 public class GetManyPostsResponse extends BasicResponse {
 
     public List<Post> posts;
-
-    public GetManyPostsResponse() {
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
 
 }

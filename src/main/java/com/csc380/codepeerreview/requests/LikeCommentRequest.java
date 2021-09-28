@@ -1,19 +1,12 @@
 package com.csc380.codepeerreview.requests;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter @Setter @NoArgsConstructor
 public class LikeCommentRequest extends BasicRequest {
 
     private int userId;
-
-    public LikeCommentRequest() {
-        super();
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
 }

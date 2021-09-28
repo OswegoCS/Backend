@@ -12,7 +12,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgresql
       - SPRING_JPA_HIBERNATE_DDL_AUTO=none
-
   PostgreSQL:
     image: postgres
     ports:

@@ -14,7 +14,6 @@ import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.requests.CreatePostRequest;
 import com.csc380.codepeerreview.requests.EditPostRequest;
-import com.csc380.codepeerreview.responses.GetIdsResponse;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
 import com.csc380.codepeerreview.responses.SearchPostsResponse;
@@ -83,11 +82,9 @@ public class PostController {
 
     // Returns a list of all post ids
     @GetMapping(path = "/posts/id")
-    public GetIdsResponse getIds() {
-        GetIdsResponse response = new GetIdsResponse();
+    public List<String> getIds() {
         List<String> ids = postRepo.getIds();
-        response.setIds(ids);
-        return response;
+        return ids;
     }
 
     // Returns a list of all post ids

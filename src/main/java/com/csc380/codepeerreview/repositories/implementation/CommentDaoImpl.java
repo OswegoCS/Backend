@@ -34,7 +34,9 @@ public class CommentDaoImpl implements CommentDao {
     INSERT INTO comments (post_id, content, user_id, publish_date) 
     VALUES (:post_id, :content, (SELECT id FROM users WHERE screen_name = :screen_name), :publish_date)""";
 
-    final private String DELETE_COMMENT = "DELETE FROM comments WHERE id = :id";
+    final private String DELETE_COMMENT = """
+    DELETE FROM
+    comments WHERE id = :id""";
 
     final private String REPORT_COMMENT = """
     INSERT INTO reported_comments (id, reason, reporter_id) 
