@@ -2,7 +2,6 @@ package com.csc380.codepeerreview.controllers;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -49,7 +48,7 @@ public class PostController {
     @GetMapping(value = "/posts")
     public GetManyPostsResponse getAllPosts() {
         List<Post> posts = null;
-        GetManyPostsResponse response = new GetManyPostsResponse();
+        var response = new GetManyPostsResponse();
         posts = postRepo.findAll();
         posts.forEach(post -> post.setLikes(postRepo.getLikes(post.getId())));
         response.setPosts(posts);
@@ -59,7 +58,7 @@ public class PostController {
     // Returns a Post with the given id
     @GetMapping(path = "/posts/id/{id}")
     public GetPostByIdResponse getPostsById(@PathVariable("id") Integer id) {
-        GetPostByIdResponse response = new GetPostByIdResponse();
+        var response = new GetPostByIdResponse();
         List<Comment> comments = null;
         Post post = null;
         try {
@@ -71,7 +70,7 @@ public class PostController {
         comments = commentRepo.findByPostId(id);
 
         comments.forEach(comment -> {
-            List<String> usersWhoLiked = commentRepo.getLikes(comment.getId());
+            var usersWhoLiked = commentRepo.getLikes(comment.getId());
             comment.setLikes(new Likes(usersWhoLiked));
         });
 
@@ -83,17 +82,16 @@ public class PostController {
     // Returns a list of all post ids
     @GetMapping(path = "/posts/id")
     public List<String> getIds() {
-        List<String> ids = postRepo.getIds();
-        return ids;
+        return postRepo.getIds();
     }
 
     // Returns a list of all post ids
     @GetMapping(path = "/posts/search/{params}")
     public SearchPostsResponse searchPosts(@PathVariable String params) {
-        SearchPostsResponse response = new SearchPostsResponse();
+        var response = new SearchPostsResponse();
         String decodedParams = URLDecoder.decode(params, StandardCharsets.UTF_8)
             .replaceAll("\\p{Punct}", "");
-        List<Post> posts = new ArrayList<Post>();
+        List<Post> posts = null;
         try {
             posts = postRepo.searchWithParams(decodedParams);
         } catch (Exception e) {
@@ -110,17 +108,21 @@ public class PostController {
         Post post = new Post(
             request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
         int id = postRepo.insertPost(post);
-        ObjectNode objectNode = mapper.createObjectNode();
-        objectNode.put("id", id);
-        return objectNode;
+        ObjectNode response = mapper.createObjectNode();
+        response.put("id", id);
+        return response;
     }
 
     @PutMapping("/posts/edit")
-    public void editPost(@RequestBody EditPostRequest request) {
+    public ObjectNode editPost(@RequestBody EditPostRequest request) {
         Post post = new Post(
-            request.getId(), request.getScreenName(), request.getTitle(), request.getContent(),request.getCode());
+            request.getId(), request.getScreenName(), request.getTitle(), 
+            request.getContent(),request.getCode());
         postRepo.updatePost(post);
-
+        ObjectNode response = mapper.createObjectNode();
+        response.put("id", request.getId());
+        System.out.println(response.toPrettyString());
+        return response;
     }
 
     @DeleteMapping("/posts/delete/id/{id}")

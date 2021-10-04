@@ -53,7 +53,8 @@ public class PostDaoImpl implements PostDao {
     SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name 
     FROM posts 
     INNER JOIN users ON posts.user_id = users.id 
-    WHERE users.id = :user_id""";
+    WHERE users.id = :user_id
+    ORDER BY publish_date DESC""";
 
     private final String SELECT_POSTS_LIKE = """
     SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name 
@@ -69,7 +70,7 @@ public class PostDaoImpl implements PostDao {
     WHERE post_id = :post_id""";
 
     private NamedParameterJdbcTemplate template;
-
+    SqlParameterSource params;
     private RowMapper<Post> mapper = new PostRowMapper();
 
     public PostDaoImpl(NamedParameterJdbcTemplate template) {
@@ -98,41 +99,40 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public int insertPost(Post post) {
-        SqlParameterSource param = new MapSqlParameterSource()
+        params = new MapSqlParameterSource()
                 .addValue("screen_name", post.getScreenName())
                 .addValue("title", post.getTitle())
-                .addValue("content", post.getTitle())
+                .addValue("content", post.getContent())
                 .addValue("code", post.getCode())
                 .addValue("publish_date", Timestamp.from(Instant.now()));
-        return template.queryForObject(INSERT_POST, param, Integer.class);
+        return template.queryForObject(INSERT_POST, params, Integer.class);
     }
 
     @Override
     public void updatePost(Post post) {
-        SqlParameterSource param = new MapSqlParameterSource()
+        params = new MapSqlParameterSource()
             .addValue("title", post.getTitle())
-            .addValue("content", post.getTitle())
+            .addValue("content", post.getContent())
             .addValue("code", post.getCode())
             .addValue("id", post.getId());
-        template.update(UPDATE_POST, param);
+        template.update(UPDATE_POST, params);
     }
 
     @Override
     public void deletePost(Integer id) {
-        SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
-        template.update(DELETE_POST, param);
+        params = new MapSqlParameterSource("id", id);
+        template.update(DELETE_POST, params);
     }
 
     @Override
     public List<Post> searchWithParams(String searchParams) {
-        SqlParameterSource params = new MapSqlParameterSource()
-            .addValue("params", "%" + searchParams + "%");
+        params = new MapSqlParameterSource("params", "%" + searchParams + "%");
         return template.query(SELECT_POSTS_LIKE, params, mapper);
     }
 
     @Override
     public List<LikeInfo> getLikes(int id) {
-        SqlParameterSource param = new MapSqlParameterSource().addValue("post_id", id);
-        return template.query(SELECT_LIKES, param, BeanPropertyRowMapper.newInstance(LikeInfo.class));
+        params = new MapSqlParameterSource("post_id", id);
+        return template.query(SELECT_LIKES, params, BeanPropertyRowMapper.newInstance(LikeInfo.class));
     }
 }

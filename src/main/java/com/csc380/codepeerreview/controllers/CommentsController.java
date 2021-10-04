@@ -32,11 +32,8 @@ public class CommentsController {
 
     @PostMapping(value = "/comments/create")
     public void createComment(@RequestBody CreateCommentRequest request) {
-
-        Comment comment = new Comment();
-        comment.setContent(request.getComment());
-        comment.setPostId(request.getPostId());
-        comment.setScreenName(request.getScreenName());
+        Comment comment = new Comment(
+            request.getComment(), request.getPostId(), request.getScreenName());
         commentRepo.insertComment(comment);
 
     }
@@ -44,7 +41,6 @@ public class CommentsController {
     @DeleteMapping(value = "/comments/id/{id}")
     public void findById(@PathVariable Integer id) {
         commentRepo.deleteComment(id);
-
     }
 
     @PutMapping(value = "/comments/report")
@@ -59,8 +55,7 @@ public class CommentsController {
 
     @GetMapping(value = "/comments/reported")
     public GetReportedCommentsResponse getReportedComments() {
-
-        GetReportedCommentsResponse response = new GetReportedCommentsResponse();
+        var response = new GetReportedCommentsResponse();
         List<ReportedComment> comments = commentRepo.getReportedComments();
         response.setComments(comments);
         return response;

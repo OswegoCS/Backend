@@ -15,4 +15,10 @@ public class Comment {
     private String date;
     private Likes likes;
 
+    public Comment(String content, int postId, String screenName){
+        this.content = content;
+        this.postId = postId;
+        this.screenName = screenName;
+    }
+
 }

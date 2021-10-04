@@ -8,6 +8,7 @@ import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
 import com.csc380.codepeerreview.repositories.mappers.UserRowMapper;
 
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -31,6 +32,7 @@ public class UserDaoImpl implements UserDao {
     "INSERT INTO users (first_name, last_name, email, screen_name, role) VALUES ";
 
     private NamedParameterJdbcTemplate template;
+    private RowMapper<User> mapper = new UserRowMapper();
 
     public UserDaoImpl(NamedParameterJdbcTemplate template) {
         this.template = template;
@@ -39,7 +41,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User findById(Integer id) {
         return template.queryForObject(
-            SELECT_BY_ID, new MapSqlParameterSource("id", id), new UserRowMapper());
+            SELECT_BY_ID, new MapSqlParameterSource("id", id), mapper);
     }
 
     @Override
@@ -82,7 +84,7 @@ public class UserDaoImpl implements UserDao {
     public User findByEmail(String email) {
         try {
             return template.queryForObject(
-                SELECT_BY_EMAIL, new MapSqlParameterSource("email", email), new UserRowMapper());
+                SELECT_BY_EMAIL, new MapSqlParameterSource("email", email), mapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

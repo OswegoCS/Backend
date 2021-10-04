@@ -38,7 +38,7 @@ public class UserController {
 
     // Returns a profile of a user
     @GetMapping(path = "/users/profile/{email}")
-    public GetProfileResponse getIds(@PathVariable String email) {
+    public GetProfileResponse getProfile(@PathVariable String email) {
         GetProfileResponse response = new GetProfileResponse();
         String decodedEmail = email.replace("%40", "");
         User user = userRepo.findByEmail(decodedEmail);
@@ -59,17 +59,13 @@ public class UserController {
 
     @PostMapping(path = "/users/create/students")
     public void createStudents(@RequestBody CreateStudentsRequest request) {
-
         List<User> students = request.getUsers();
-
         userRepo.insertUsers(students, "students");
     }
 
     @PostMapping(path = "/users/create/instructors")
     public void createInstructors(@RequestBody CreateStudentsRequest request) {
-
         List<User> instructors = request.getUsers();
-
         userRepo.insertUsers(instructors, "instructor");
     }
 }

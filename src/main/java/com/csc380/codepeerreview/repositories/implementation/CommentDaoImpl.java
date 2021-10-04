@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.sql.Timestamp;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -53,6 +54,8 @@ public class CommentDaoImpl implements CommentDao {
     WHERE comment_id = :comment_id""";
 
     private NamedParameterJdbcTemplate template;
+    private SqlParameterSource params;
+    private RowMapper<Comment> mapper = new CommentRowMapper();
 
     public CommentDaoImpl(NamedParameterJdbcTemplate template) {
         this.template = template;
@@ -62,63 +65,52 @@ public class CommentDaoImpl implements CommentDao {
     public List<Comment> findByPostId(Integer id) {
         List<Comment> comments = null;
         comments = template.query(
-            SELECT_BY_POST_ID, new MapSqlParameterSource("post_id", id), new CommentRowMapper());
+            SELECT_BY_POST_ID, new MapSqlParameterSource("post_id", id), mapper);
         return comments;
     }
 
     @Override
     public void insertComment(Comment comment) {
-
-        SqlParameterSource param = new MapSqlParameterSource()
+        params = new MapSqlParameterSource()
             .addValue("post_id", comment.getPostId())
             .addValue("publish_date", Timestamp.from(Instant.now()))
             .addValue("content", comment.getContent())
             .addValue("screen_name", comment.getScreenName());
-
-        template.update(INSERT_COMMENT, param);
+        template.update(INSERT_COMMENT, params);
 
     }
 
     @Override
     public void deleteComment(Integer id) {
-
-        SqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
-
-        template.update(DELETE_COMMENT, param);
-
+        params = new MapSqlParameterSource("id", id);
+        template.update(DELETE_COMMENT, params);
     }
 
     @Override
     public void reportComment(Integer id, Integer reporterId, String reason) {
-
-        SqlParameterSource param = new MapSqlParameterSource()
+        params = new MapSqlParameterSource()
             .addValue("id", id)
             .addValue("reporter_id", reporterId)
             .addValue("reason", reason);
-
-        template.update(REPORT_COMMENT, param);
+        template.update(REPORT_COMMENT, params);
     }
 
     @Override
     public void likeComment(Integer commentId, Integer userId) {
-        SqlParameterSource param = new MapSqlParameterSource()
-        .addValue("comment_id", commentId)
-        .addValue("user_id", userId);
-
-        template.update(LIKE_COMMENT, param);
+        params = new MapSqlParameterSource()
+            .addValue("comment_id", commentId)
+            .addValue("user_id", userId);
+        template.update(LIKE_COMMENT, params);
     }
 
     @Override
     public List<String> getLikes(Integer id) {
-        SqlParameterSource param = new MapSqlParameterSource().addValue("comment_id", id);
-
-        return template.query(GET_LIKES, param, (rs, rn) -> String.valueOf(rs.getString("screen_name")));
-
+        params = new MapSqlParameterSource("comment_id", id);
+        return template.query(GET_LIKES, params, (rs, rn) -> String.valueOf(rs.getString("screen_name")));
     }
 
     @Override
     public List<ReportedComment> getReportedComments() {
-
         return template.query(SELECT_REPORTED, BeanPropertyRowMapper.newInstance(ReportedComment.class));
     }
 
