@@ -121,7 +121,6 @@ public class PostController {
         postRepo.updatePost(post);
         ObjectNode response = mapper.createObjectNode();
         response.put("id", request.getId());
-        System.out.println(response.toPrettyString());
         return response;
     }
 
