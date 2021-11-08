@@ -87,11 +87,11 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public void reportComment(Integer id, Integer reporterId, String reason) {
+    public void reportComment(ReportedComment comment) {
         params = new MapSqlParameterSource()
-            .addValue("id", id)
-            .addValue("reporter_id", reporterId)
-            .addValue("reason", reason);
+            .addValue("id", comment.getCommentId())
+            .addValue("reporter_id", comment.getReporterId())
+            .addValue("reason", comment.getReason());
         template.update(REPORT_COMMENT, params);
     }
 

@@ -1,19 +1,15 @@
 package com.csc380.codepeerreview.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class ReportedComment {
 
-    private String author;
-    private String reporter;
     private int commentId;
-    private int authorId;
     private int reporterId;
-    private int postId;
     private String reason;
-    private String content;
-    private String date;
+    private String dateReported;
 
 }

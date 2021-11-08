@@ -1,9 +1,5 @@
 package com.csc380.codepeerreview.controllers;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import com.csc380.codepeerreview.models.Comment;
 import com.csc380.codepeerreview.models.ReportedComment;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
@@ -11,7 +7,9 @@ import com.csc380.codepeerreview.requests.CreateCommentRequest;
 import com.csc380.codepeerreview.requests.LikeCommentRequest;
 import com.csc380.codepeerreview.requests.ReportContentRequest;
 import com.csc380.codepeerreview.responses.GetReportedCommentsResponse;
+import com.csc380.codepeerreview.services.CommentService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,39 +25,39 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class CommentsController {
 
-    @Resource
-    public CommentDao commentRepo;
+    private final CommentService commentService;
+
+    @Autowired
+    public CommentsController(CommentService commentService,CommentDao commentRepo) {
+        this.commentService = commentService;
+    }
 
     @PostMapping(value = "/comments/create")
     public void createComment(@RequestBody CreateCommentRequest request) {
         Comment comment = new Comment(
             request.getComment(), request.getPostId(), request.getScreenName());
-        commentRepo.insertComment(comment);
-
+        commentService.createComment(comment);
     }
 
     @DeleteMapping(value = "/comments/id/{id}")
-    public void findById(@PathVariable Integer id) {
-        commentRepo.deleteComment(id);
+    public void deleteComment(@PathVariable Integer id) {
+        commentService.deleteComment(id);
     }
 
     @PutMapping(value = "/comments/report")
     public void reportComment(@RequestBody ReportContentRequest request) {
-        commentRepo.reportComment(request.getId(), request.getReporterId(), request.getReason());
+        var reportedComment = new ReportedComment(request.getId(), request.getReporterId(), request.getReason(), "");
+        commentService.reportComment(reportedComment);
     }
 
     @PostMapping(value = "/comments/like")
     public void likeComment(@RequestBody LikeCommentRequest request) {
-        commentRepo.likeComment(request.getId(), request.getUserId());
+        commentService.likeComment(request.getId(), request.getUserId());
     }
 
     @GetMapping(value = "/comments/reported")
     public GetReportedCommentsResponse getReportedComments() {
-        var response = new GetReportedCommentsResponse();
-        List<ReportedComment> comments = commentRepo.getReportedComments();
-        response.setComments(comments);
-        return response;
-
+        return commentService.getReportedComments();
     }
 
     @PutMapping(value = "/comments/edit/{id}")

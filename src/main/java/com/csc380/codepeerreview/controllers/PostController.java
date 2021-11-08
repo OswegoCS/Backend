@@ -1,27 +1,16 @@
 package com.csc380.codepeerreview.controllers;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-import javax.annotation.Resource;
-
-import com.csc380.codepeerreview.models.Comment;
-import com.csc380.codepeerreview.models.Likes;
-import com.csc380.codepeerreview.models.Post;
-import com.csc380.codepeerreview.repositories.dao.CommentDao;
-import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.requests.CreatePostRequest;
 import com.csc380.codepeerreview.requests.EditPostRequest;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
 import com.csc380.codepeerreview.responses.SearchPostsResponse;
+import com.csc380.codepeerreview.services.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,101 +20,55 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
 public class PostController {
-    @Resource
-    public PostDao postRepo;
-    @Resource
-    public CommentDao commentRepo;
+
+    private final ObjectMapper mapper;
+    private final PostService postService;
 
     @Autowired
-    public ObjectMapper mapper;
+    public PostController(PostService postService, ObjectMapper mapper){
+        this.postService = postService;
+        this.mapper = mapper;
+    }
 
     @GetMapping(value = "/posts")
     public GetManyPostsResponse getAllPosts() {
-        List<Post> posts = null;
-        var response = new GetManyPostsResponse();
-        posts = postRepo.findAll();
-        posts.forEach(post -> post.setLikes(postRepo.getLikes(post.getId())));
-        response.setPosts(posts);
-        return response;
+        return postService.getAllPosts();
     }
 
     // Returns a Post with the given id
     @GetMapping(path = "/posts/id/{id}")
     public GetPostByIdResponse getPostsById(@PathVariable("id") Integer id) {
-        var response = new GetPostByIdResponse();
-        List<Comment> comments = null;
-        Post post = null;
-        try {
-            post = postRepo.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts with id: " + id);
-        }
-        post.setLikes(postRepo.getLikes(post.getId()));
-        comments = commentRepo.findByPostId(id);
-
-        comments.forEach(comment -> {
-            var usersWhoLiked = commentRepo.getLikes(comment.getId());
-            comment.setLikes(new Likes(usersWhoLiked));
-        });
-
-        response.setPost(post);
-        response.setComments(comments);
-        return response;
+        return postService.getPostsById(id);
     }
 
     // Returns a list of all post ids
     @GetMapping(path = "/posts/id")
     public List<String> getIds() {
-        return postRepo.getIds();
+        return postService.getIds();
     }
 
     // Returns a list of all post ids
     @GetMapping(path = "/posts/search/{params}")
     public SearchPostsResponse searchPosts(@PathVariable String params) {
-        var response = new SearchPostsResponse();
-        String decodedParams = URLDecoder.decode(params, StandardCharsets.UTF_8)
-            .replaceAll("\\p{Punct}", "");
-        List<Post> posts = null;
-        try {
-            posts = postRepo.searchWithParams(decodedParams);
-        } catch (Exception e) {
-            // log the exception
-        }
-
-        response.setQuery(decodedParams);
-        response.setPosts(posts);
-        return response;
+        return postService.searchPosts(params);
     }
 
     @PostMapping("/posts/create")
     public ObjectNode createPost(@RequestBody CreatePostRequest request) {
-        Post post = new Post(
-            request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
-        int id = postRepo.insertPost(post);
-        ObjectNode response = mapper.createObjectNode();
-        response.put("id", id);
-        return response;
+        return postService.createPost(request);
     }
 
     @PutMapping("/posts/edit")
     public ObjectNode editPost(@RequestBody EditPostRequest request) {
-        Post post = new Post(
-            request.getId(), request.getScreenName(), request.getTitle(), 
-            request.getContent(),request.getCode());
-        postRepo.updatePost(post);
-        ObjectNode response = mapper.createObjectNode();
-        response.put("id", request.getId());
-        return response;
+        return postService.editPost(request);
     }
 
     @DeleteMapping("/posts/delete/id/{id}")
     public void deletePost(@PathVariable("id") Integer id) {
-        postRepo.deletePost(id);
+        postService.deletePost(id);
     }
 }

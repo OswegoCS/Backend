@@ -10,6 +10,6 @@ import lombok.Setter;
 @Setter @NoArgsConstructor
 public class GetManyPostsResponse extends BasicResponse {
 
-    public List<Post> posts;
+    public List<Post> posts; 
 
 }

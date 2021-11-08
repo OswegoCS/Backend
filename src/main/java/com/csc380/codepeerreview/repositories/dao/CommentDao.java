@@ -12,7 +12,7 @@ public interface CommentDao {
 
     void deleteComment(Integer id);
 
-    void reportComment(Integer id, Integer reporterId, String reason);
+    void reportComment(ReportedComment comment);
 
     void likeComment(Integer commentId, Integer userId);
 

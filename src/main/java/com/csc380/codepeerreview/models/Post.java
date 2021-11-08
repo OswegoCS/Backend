@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
 public class Post {
-
+    
     private int id;
     private String screenName;
     private String title;
