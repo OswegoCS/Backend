@@ -7,7 +7,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -59,13 +58,6 @@ public class PostDaoImpl implements PostDao {
     FROM posts 
     INNER JOIN users ON posts.user_id = users.id 
     WHERE content LIKE :params""";
-
-    private final String SELECT_LIKES = """
-    SELECT user_id AS id, screen_name AS screenName 
-    FROM post_likes 
-    INNER JOIN users 
-    ON users.id = post_likes.user_id 
-    WHERE post_id = :post_id""";
 
     private final NamedParameterJdbcTemplate template;
     private final RowMapper<Post> rowMapper;
