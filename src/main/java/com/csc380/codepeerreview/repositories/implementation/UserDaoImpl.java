@@ -1,5 +1,6 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
+import com.csc380.codepeerreview.models.Role;
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
 import com.csc380.codepeerreview.repositories.mappers.UserRowMapper;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,6 +31,14 @@ public class UserDaoImpl implements UserDao {
     FROM users 
     WHERE email = :email""";
 
+    private final String SELECT_ROLES = """
+    SELECT user_roles.role_id AS roleId, roles.role_name AS roleName
+    FROM roles
+    INNER JOIN user_roles
+	ON user_roles.role_id = roles.id
+    WHERE user_roles.user_id = :id
+    """;
+
     private String insertUsers = 
     "INSERT INTO users (first_name, last_name, email, screen_name, role) VALUES ";
 
@@ -44,8 +54,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User findById(Integer id) {
         try {
-        return template.queryForObject(
+        User user =  template.queryForObject(
             SELECT_BY_ID, new MapSqlParameterSource("id", id), userMapper);
+            List<Role> roles = template.query(SELECT_ROLES, new MapSqlParameterSource("id", user.getId()), BeanPropertyRowMapper.newInstance(Role.class));
+            user.setRoles(roles);
+        return user;
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No users with id: " + id);
         }
@@ -91,10 +104,15 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User findByEmail(String email) {
         try {
-            return template.queryForObject(
+            User user =  template.queryForObject(
                 SELECT_BY_EMAIL, new MapSqlParameterSource("email", email), userMapper);
+            List<Role> roles = template.query(SELECT_ROLES, new MapSqlParameterSource("id", user.getId()), BeanPropertyRowMapper.newInstance(Role.class));
+            user.setRoles(roles);
+            return user;
         } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No users with email: " + email);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No users with email: " + email);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }

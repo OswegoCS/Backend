@@ -1,5 +1,6 @@
 package com.csc380.codepeerreview.models;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,6 @@ public class User {
     private String lastName;
     private String email;
     private String screenName;
-    private String type;
     private String course;
+    private List<Role> roles;
 }
