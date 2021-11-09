@@ -4,9 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.csc380.codepeerreview.models.Post;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Component
 public class PostRowMapper implements RowMapper<Post> {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMM dd 'at' h:mm a");

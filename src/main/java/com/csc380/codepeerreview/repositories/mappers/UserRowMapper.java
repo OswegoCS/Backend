@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import com.csc380.codepeerreview.models.User;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserRowMapper implements RowMapper<User> {
 
     @Override

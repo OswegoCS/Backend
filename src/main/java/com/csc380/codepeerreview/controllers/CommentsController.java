@@ -28,7 +28,7 @@ public class CommentsController {
     private final CommentService commentService;
 
     @Autowired
-    public CommentsController(CommentService commentService,CommentDao commentRepo) {
+    public CommentsController(CommentService commentService) {
         this.commentService = commentService;
     }
 

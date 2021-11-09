@@ -1,12 +1,16 @@
 package com.csc380.codepeerreview.repositories.mappers;
 
+import java.beans.JavaBean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.csc380.codepeerreview.models.Comment;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Component
 public class CommentRowMapper implements RowMapper<Comment> {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy 'at' h:mm:ss a	");
