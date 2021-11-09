@@ -1,14 +1,13 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.List;
-
 import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.repositories.mappers.PostRowMapper;
-
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -69,17 +68,19 @@ public class PostDaoImpl implements PostDao {
     ON users.id = post_likes.user_id 
     WHERE post_id = :post_id""";
 
-    private NamedParameterJdbcTemplate template;
-    SqlParameterSource params;
-    private RowMapper<Post> mapper = new PostRowMapper();
+    private final NamedParameterJdbcTemplate template;
+    private final RowMapper<Post> rowMapper;
+    private SqlParameterSource params;
 
-    public PostDaoImpl(NamedParameterJdbcTemplate template) {
+    @Autowired
+    public PostDaoImpl(NamedParameterJdbcTemplate template, PostRowMapper rowMapper) {
         this.template = template;
+        this.rowMapper = rowMapper;
     }
 
     @Override
     public List<Post> findAll() {
-        return template.query(SELECT_ALL, mapper);
+        return template.query(SELECT_ALL, rowMapper);
     }
 
     @Override
@@ -89,12 +90,12 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Post findById(Integer id) {
-        return template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), mapper);
+        return template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), rowMapper);
     }
 
     @Override
     public List<Post> findByUserId(Integer id) {
-        return template.query(SELECT_BY_USER_ID, new MapSqlParameterSource("user_id", id), mapper);
+        return template.query(SELECT_BY_USER_ID, new MapSqlParameterSource("user_id", id), rowMapper);
     }
 
     @Override
@@ -127,7 +128,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public List<Post> searchWithParams(String searchParams) {
         params = new MapSqlParameterSource("params", "%" + searchParams + "%");
-        return template.query(SELECT_POSTS_LIKE, params, mapper);
+        return template.query(SELECT_POSTS_LIKE, params, rowMapper);
     }
 
     @Override

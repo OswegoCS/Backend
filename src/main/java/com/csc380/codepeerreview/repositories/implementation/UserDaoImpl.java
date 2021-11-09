@@ -1,18 +1,17 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
 import com.csc380.codepeerreview.repositories.mappers.UserRowMapper;
-
-import org.springframework.jdbc.core.RowMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,17 +30,19 @@ public class UserDaoImpl implements UserDao {
     private String insertUsers = 
     "INSERT INTO users (first_name, last_name, email, screen_name, role) VALUES ";
 
-    private NamedParameterJdbcTemplate template;
-    private RowMapper<User> mapper = new UserRowMapper();
+    private final NamedParameterJdbcTemplate template;
+    private final RowMapper<User> userMapper;
 
-    public UserDaoImpl(NamedParameterJdbcTemplate template) {
+    @Autowired
+    public UserDaoImpl(NamedParameterJdbcTemplate template, UserRowMapper userMapper) {
         this.template = template;
+        this.userMapper = userMapper;
     }
 
     @Override
     public User findById(Integer id) {
         return template.queryForObject(
-            SELECT_BY_ID, new MapSqlParameterSource("id", id), mapper);
+            SELECT_BY_ID, new MapSqlParameterSource("id", id), userMapper);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class UserDaoImpl implements UserDao {
     public User findByEmail(String email) {
         try {
             return template.queryForObject(
-                SELECT_BY_EMAIL, new MapSqlParameterSource("email", email), mapper);
+                SELECT_BY_EMAIL, new MapSqlParameterSource("email", email), userMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }

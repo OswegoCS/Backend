@@ -1,20 +1,20 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
-import java.util.List;
-import java.time.Instant;
-import java.sql.Timestamp;
-
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.stereotype.Repository;
-
 import com.csc380.codepeerreview.models.Comment;
 import com.csc380.codepeerreview.models.ReportedComment;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.mappers.CommentRowMapper;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class CommentDaoImpl implements CommentDao {
@@ -53,19 +53,21 @@ public class CommentDaoImpl implements CommentDao {
     INNER JOIN users ON users.id = comment_likes.user_id 
     WHERE comment_id = :comment_id""";
 
-    private NamedParameterJdbcTemplate template;
+    private final NamedParameterJdbcTemplate template;
+    private final RowMapper<Comment> commentMapper;
     private SqlParameterSource params;
-    private RowMapper<Comment> mapper = new CommentRowMapper();
 
-    public CommentDaoImpl(NamedParameterJdbcTemplate template) {
+    @Autowired
+    public CommentDaoImpl(NamedParameterJdbcTemplate template, CommentRowMapper commentMapper) {
         this.template = template;
+        this.commentMapper = commentMapper;
     }
 
     @Override
     public List<Comment> findByPostId(Integer id) {
         List<Comment> comments = null;
         comments = template.query(
-            SELECT_BY_POST_ID, new MapSqlParameterSource("post_id", id), mapper);
+            SELECT_BY_POST_ID, new MapSqlParameterSource("post_id", id), commentMapper);
         return comments;
     }
 
