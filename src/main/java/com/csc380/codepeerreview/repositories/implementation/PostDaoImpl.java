@@ -1,6 +1,5 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
-import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.repositories.mappers.PostRowMapper;
@@ -129,11 +128,5 @@ public class PostDaoImpl implements PostDao {
     public List<Post> searchWithParams(String searchParams) {
         params = new MapSqlParameterSource("params", "%" + searchParams + "%");
         return template.query(SELECT_POSTS_LIKE, params, rowMapper);
-    }
-
-    @Override
-    public List<LikeInfo> getLikes(int id) {
-        params = new MapSqlParameterSource("post_id", id);
-        return template.query(SELECT_LIKES, params, BeanPropertyRowMapper.newInstance(LikeInfo.class));
     }
 }

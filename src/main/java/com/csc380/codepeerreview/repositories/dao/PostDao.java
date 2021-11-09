@@ -1,7 +1,6 @@
 package com.csc380.codepeerreview.repositories.dao;
 
 import java.util.List;
-import com.csc380.codepeerreview.models.LikeInfo;
 import com.csc380.codepeerreview.models.Post;
 
 public interface PostDao {
@@ -21,7 +20,5 @@ public interface PostDao {
     List<String> getIds();
 
     List<Post> searchWithParams(String params);
-
-    List<LikeInfo> getLikes(int id);
 
 }
