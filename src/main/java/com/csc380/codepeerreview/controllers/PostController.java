@@ -25,13 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class PostController {
 
-    private final ObjectMapper mapper;
     private final PostService postService;
 
     @Autowired
     public PostController(PostService postService, ObjectMapper mapper){
         this.postService = postService;
-        this.mapper = mapper;
     }
 
     @GetMapping(value = "/posts")
