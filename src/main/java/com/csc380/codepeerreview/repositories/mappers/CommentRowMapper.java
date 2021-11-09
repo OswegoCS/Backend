@@ -1,19 +1,17 @@
 package com.csc380.codepeerreview.repositories.mappers;
 
-import java.beans.JavaBean;
+import com.csc380.codepeerreview.models.Comment;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.csc380.codepeerreview.models.Comment;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class CommentRowMapper implements RowMapper<Comment> {
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy 'at' h:mm:ss a	");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMM dd, yyyy 'at' h:mm:ss a	");
 
     @Override
     public Comment mapRow(ResultSet rs, int arg1) throws SQLException {
@@ -24,7 +22,6 @@ public class CommentRowMapper implements RowMapper<Comment> {
         comment.setContent(rs.getString("content"));
         comment.setDate(formatter.format(rs.getObject("publish_date", LocalDateTime.class)));
         comment.setScreenName(rs.getString("screen_name"));
-
         return comment;
     }
 

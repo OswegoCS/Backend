@@ -1,10 +1,8 @@
 package com.csc380.codepeerreview.repositories.mappers;
 
+import com.csc380.codepeerreview.models.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import com.csc380.codepeerreview.models.User;
-
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 

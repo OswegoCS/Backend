@@ -8,11 +8,13 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -41,8 +43,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findById(Integer id) {
+        try {
         return template.queryForObject(
             SELECT_BY_ID, new MapSqlParameterSource("id", id), userMapper);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No users with id: " + id);
+        }
+        
     }
 
     @Override
@@ -87,7 +94,7 @@ public class UserDaoImpl implements UserDao {
             return template.queryForObject(
                 SELECT_BY_EMAIL, new MapSqlParameterSource("email", email), userMapper);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No users with email: " + email);
         }
     }
 }

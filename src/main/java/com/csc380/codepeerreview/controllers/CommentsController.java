@@ -2,7 +2,6 @@ package com.csc380.codepeerreview.controllers;
 
 import com.csc380.codepeerreview.models.Comment;
 import com.csc380.codepeerreview.models.ReportedComment;
-import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.requests.CreateCommentRequest;
 import com.csc380.codepeerreview.requests.LikeCommentRequest;
 import com.csc380.codepeerreview.requests.ReportContentRequest;

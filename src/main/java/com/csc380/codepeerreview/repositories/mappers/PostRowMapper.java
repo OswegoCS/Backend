@@ -1,18 +1,17 @@
 package com.csc380.codepeerreview.repositories.mappers;
 
+import com.csc380.codepeerreview.models.Post;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import com.csc380.codepeerreview.models.Post;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class PostRowMapper implements RowMapper<Post> {
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMM dd 'at' h:mm a");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MMM dd 'at' h:mm a");
 
     @Override
     public Post mapRow(ResultSet rs, int arg1) throws SQLException {
