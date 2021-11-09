@@ -16,7 +16,6 @@ public class Post {
     private String date;
     private String code;
     private String course;
-    private List<LikeInfo> likes;
 
     public Post(int id, String screenName, String title, String content, String code) {
         this.id = id;

@@ -45,7 +45,6 @@ public class PostService {
         List<Post> posts = null;
         var response = new GetManyPostsResponse();
         posts = postRepo.findAll();
-        posts.forEach(post -> post.setLikes(postRepo.getLikes(post.getId())));
         response.setPosts(posts);
         return response;
     }
@@ -60,7 +59,6 @@ public class PostService {
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts with id: " + id);
         }
-        post.setLikes(postRepo.getLikes(post.getId()));
         comments = commentRepo.findByPostId(id);
 
         comments.forEach(comment -> {
