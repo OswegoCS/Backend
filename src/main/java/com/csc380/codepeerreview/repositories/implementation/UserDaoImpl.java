@@ -39,8 +39,17 @@ public class UserDaoImpl implements UserDao {
     WHERE user_roles.user_id = :id
     """;
 
+    /*Full query looks like this
+    INSERT INTO users (first_name, last_name, email, screen_name) 
+    VALUES 
+    (:first_name0, :last_name0, :email0, :screen_name0),
+    (:first_name1, :last_name1, :email1, :screen_name1),
+    ...
+    ...
+    ON CONFLICT (email) DO NOTHING"
+    */
     private String insertUsers = 
-    "INSERT INTO users (first_name, last_name, email, screen_name, role) VALUES ";
+    "INSERT INTO users (first_name, last_name, email, screen_name) VALUES ";
 
     private final NamedParameterJdbcTemplate template;
     private final RowMapper<User> userMapper;
@@ -73,7 +82,6 @@ public class UserDaoImpl implements UserDao {
         String lastName = "last_name";
         String email = "email";
         String screenName = "screen_name";
-        String role = "role";
         Map<String, Object> headers = new HashMap<String, Object>();
         SqlParameterSource param;
 
@@ -83,22 +91,22 @@ public class UserDaoImpl implements UserDao {
             headers.put(lastName.concat(index), users.get(i).getLastName());
             headers.put(email.concat(index), users.get(i).getEmail());
             headers.put(screenName.concat(index), users.get(i).getEmail().split("@")[0]);
-            headers.put(role.concat(index), type);
 
             query.append("(")
             .append(":").append(firstName.concat(index))
             .append(", ").append(":").append(lastName.concat(index))
             .append(", ").append(":").append(email.concat(index))
             .append(", ").append(":").append(screenName.concat(index))
-            .append(", ").append(":").append(role.concat(index))
             .append(") ")
             .append(i < (users.size() - 1) ? ", " : "");
         }
-
+        query.append(" ON CONFLICT (email) DO NOTHING");
         param = new MapSqlParameterSource(headers);
-
-        template.update(query.toString(), param);
-
+        try{
+            template.update(query.toString(), param);
+        } catch(Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
