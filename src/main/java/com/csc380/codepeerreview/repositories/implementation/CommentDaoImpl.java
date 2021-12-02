@@ -1,6 +1,7 @@
 package com.csc380.codepeerreview.repositories.implementation;
 
 import com.csc380.codepeerreview.models.Comment;
+import com.csc380.codepeerreview.models.Likes;
 import com.csc380.codepeerreview.models.ReportedComment;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.mappers.CommentRowMapper;
@@ -68,6 +69,10 @@ public class CommentDaoImpl implements CommentDao {
         List<Comment> comments = null;
         comments = template.query(
             SELECT_BY_POST_ID, new MapSqlParameterSource("post_id", id), commentMapper);
+        comments.forEach(comment -> {
+                var usersWhoLiked = getLikes(comment.getId());
+                comment.setLikes(new Likes(usersWhoLiked));
+        });
         return comments;
     }
 
