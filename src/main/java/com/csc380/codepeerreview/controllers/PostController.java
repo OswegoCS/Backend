@@ -1,5 +1,6 @@
 package com.csc380.codepeerreview.controllers;
 
+import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.requests.CreatePostRequest;
 import com.csc380.codepeerreview.requests.EditPostRequest;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
@@ -62,12 +63,17 @@ public class PostController {
 
     @PostMapping("/posts/create")
     public ObjectNode createPost(@RequestBody CreatePostRequest request) {
-        return postService.createPost(request);
+        Post post = new Post(
+            request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
+        return postService.createPost(post);
     }
 
     @PutMapping("/posts/edit")
-    public ObjectNode editPost(@RequestBody EditPostRequest request) {
-        return postService.editPost(request);
+    public void editPost(@RequestBody EditPostRequest request) {
+        Post post = new Post(
+            request.getId(), request.getScreenName(), request.getTitle(), 
+            request.getContent(),request.getCode());
+        postService.editPost(post);
     }
 
     @DeleteMapping("/posts/delete/id/{id}")
