@@ -1,4 +1,4 @@
 FROM adoptopenjdk/openjdk15:ubi
-COPY target/peer_code_review.jar /app.jar
+COPY target/peer-code-review.jar /app.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
