@@ -1,7 +1,5 @@
 package com.csc380.codepeerreview.models;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
