@@ -1,5 +1,6 @@
 package com.csc380.codepeerreview.services;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -9,6 +10,7 @@ import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
 import com.csc380.codepeerreview.responses.GetProfileResponse;
+import com.csc380.codepeerreview.util.FileHelper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,12 +50,13 @@ public class UserService {
         return objectNode;
     }
 
-    public void createStudents(List<User> students) {
+    public void createStudents(File studentCSV) {
+        List<User> students = FileHelper.convertCSVtoUsers(studentCSV);
         userRepo.insertUsers(students, "students");
     }
 
     public void createInstructors(List<User> instructors) {
         userRepo.insertUsers(instructors, "instructor");
     }
-    
+
 }
