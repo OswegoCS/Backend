@@ -7,12 +7,9 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.csc380.codepeerreview.models.Comment;
-import com.csc380.codepeerreview.models.Likes;
 import com.csc380.codepeerreview.models.Post;
 import com.csc380.codepeerreview.repositories.dao.CommentDao;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
-import com.csc380.codepeerreview.requests.CreatePostRequest;
-import com.csc380.codepeerreview.requests.EditPostRequest;
 import com.csc380.codepeerreview.responses.GetManyPostsResponse;
 import com.csc380.codepeerreview.responses.GetPostByIdResponse;
 import com.csc380.codepeerreview.responses.SearchPostsResponse;
@@ -20,10 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PostService {
@@ -54,17 +48,8 @@ public class PostService {
         var response = new GetPostByIdResponse();
         List<Comment> comments = null;
         Post post = null;
-        try {
-            post = postRepo.findById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts with id: " + id);
-        }
+        post = postRepo.findById(id);
         comments = commentRepo.findByPostId(id);
-
-        comments.forEach(comment -> {
-            var usersWhoLiked = commentRepo.getLikes(comment.getId());
-            comment.setLikes(new Likes(usersWhoLiked));
-        });
         response.setPost(post);
         response.setComments(comments);
         return response;
@@ -81,34 +66,21 @@ public class PostService {
         String decodedParams = URLDecoder.decode(params, StandardCharsets.UTF_8)
             .replaceAll("\\p{Punct}", "");
         List<Post> posts = null;
-        try {
-            posts = postRepo.searchWithParams(decodedParams);
-        } catch (Exception e) {
-            // log the exception
-        }
-
+        posts = postRepo.searchWithParams(decodedParams);
         response.setQuery(decodedParams);
         response.setPosts(posts);
         return response;
     }
 
-    public ObjectNode createPost(CreatePostRequest request) {
-        Post post = new Post(
-            request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
-        int id = postRepo.insertPost(post);
+    public ObjectNode createPost(Post newPost) {
+        int id = postRepo.insertPost(newPost);
         ObjectNode response = mapper.createObjectNode();
         response.put("id", id);
         return response;
     }
 
-    public ObjectNode editPost(EditPostRequest request) {
-        Post post = new Post(
-            request.getId(), request.getScreenName(), request.getTitle(), 
-            request.getContent(),request.getCode());
-        postRepo.updatePost(post);
-        ObjectNode response = mapper.createObjectNode();
-        response.put("id", request.getId());
-        return response;
+    public void editPost(Post postToEdit) {
+        postRepo.updatePost(postToEdit);
     }
 
     public void deletePost(Integer id) {
