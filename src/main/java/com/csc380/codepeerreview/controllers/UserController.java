@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @PostMapping(
-        path = "/users/create",
+        path = "/users",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public void uploadUsers(@RequestParam("file") MultipartFile studentCSV) {

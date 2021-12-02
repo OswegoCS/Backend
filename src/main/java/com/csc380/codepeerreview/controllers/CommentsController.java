@@ -31,14 +31,14 @@ public class CommentsController {
         this.commentService = commentService;
     }
 
-    @PostMapping(value = "/comments/create")
+    @PostMapping(value = "/comments")
     public void createComment(@RequestBody CreateCommentRequest request) {
         Comment comment = new Comment(
             request.getContent(), request.getPostId(), request.getScreenName());
         commentService.createComment(comment);
     }
 
-    @DeleteMapping(value = "/comments/id/{id}")
+    @DeleteMapping(value = "/comments/{id}")
     public void deleteComment(@PathVariable Integer id) {
         commentService.deleteComment(id);
     }
@@ -59,7 +59,7 @@ public class CommentsController {
         return commentService.getReportedComments();
     }
 
-    @PutMapping(value = "/comments/edit/{id}")
+    @PutMapping(value = "/comments/{id}")
     public void editComment(@PathVariable String id) {
 
     }

@@ -44,7 +44,7 @@ public class PostController {
     }
 
     // Returns a Post with the given id
-    @GetMapping(path = "/posts/id/{id}")
+    @GetMapping(path = "/posts/{id}")
     public GetPostByIdResponse getPostsById(@PathVariable("id") Integer id) {
         return postService.getPostsById(id);
     }
@@ -61,14 +61,14 @@ public class PostController {
         return postService.searchPosts(params);
     }
 
-    @PostMapping("/posts/create")
+    @PostMapping("/posts")
     public ObjectNode createPost(@RequestBody CreatePostRequest request) {
         Post post = new Post(
             request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
         return postService.createPost(post);
     }
 
-    @PutMapping("/posts/edit")
+    @PutMapping("/posts/{id}")
     public void editPost(@RequestBody EditPostRequest request) {
         Post post = new Post(
             request.getId(), request.getScreenName(), request.getTitle(), 
@@ -76,7 +76,7 @@ public class PostController {
         postService.editPost(post);
     }
 
-    @DeleteMapping("/posts/delete/id/{id}")
+    @DeleteMapping("/posts/{id}")
     public void deletePost(@PathVariable("id") Integer id) {
         postService.deletePost(id);
     }
