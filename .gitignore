@@ -7,3 +7,4 @@
 /bin
 /pgdata
 .vscode
+.DS_Store
