@@ -7,11 +7,13 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Repository
 public class PostDaoImpl implements PostDao {
@@ -81,7 +83,11 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Post findById(Integer id) {
-        return template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), rowMapper);
+        try {
+            return template.queryForObject(SELECT_BY_ID, new MapSqlParameterSource("id", id), rowMapper);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No posts with id: " + id);
+        }
     }
 
     @Override
