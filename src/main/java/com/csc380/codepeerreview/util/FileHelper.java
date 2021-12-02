@@ -49,6 +49,25 @@ public class FileHelper {
         return users;
     }
 
+    public static File handleRequestMultipartCSVFile(MultipartFile csv) {
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("users-", ".csv");
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "A problem occurred while processing file");
+        }
+        tempFile.deleteOnExit();
+        FileHelper.isFileEmpty(csv);
+        FileHelper.isCSV(csv);
+        try {
+            csv.transferTo(tempFile);
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot process file");
+        }
+        return tempFile;
+    }
+
     public static void isFileEmpty(MultipartFile file) {
         if (file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot process empty file");
