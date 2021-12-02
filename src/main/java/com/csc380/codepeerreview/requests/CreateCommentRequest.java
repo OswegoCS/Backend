@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class CreateCommentRequest extends BasicRequest {
 
-    private String comment;
+    private String content;
     private int postId;
 
 }

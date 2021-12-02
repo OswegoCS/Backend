@@ -34,7 +34,7 @@ public class CommentsController {
     @PostMapping(value = "/comments/create")
     public void createComment(@RequestBody CreateCommentRequest request) {
         Comment comment = new Comment(
-            request.getComment(), request.getPostId(), request.getScreenName());
+            request.getContent(), request.getPostId(), request.getScreenName());
         commentService.createComment(comment);
     }
 
