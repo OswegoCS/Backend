@@ -10,4 +10,4 @@ app:
 server:
   error:
     include-binding-errors: never
-    include-message: never
+    include-stacktrace: on_trace_param
