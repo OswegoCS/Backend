@@ -48,10 +48,7 @@ public class UserController {
         userService.createInstructors(instructors);
     }
 
-    @PostMapping(
-        path = "/users",
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public void uploadUsers(@RequestParam("file") MultipartFile studentCSV) {
         //Handle multipart file in request
         File tempFile = FileHelper.handleRequestMultipartCSVFile(studentCSV);
