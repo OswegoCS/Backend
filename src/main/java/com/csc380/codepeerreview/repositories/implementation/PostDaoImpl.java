@@ -61,6 +61,14 @@ public class PostDaoImpl implements PostDao {
     INNER JOIN users ON posts.user_id = users.id 
     WHERE content LIKE :params""";
 
+    private final String DELETE_COMMENTS_AFTER_POST_DELETION = """
+    DELETE FROM comments WHERE post_id = :id
+    """;
+
+    private final String DELETE_REPORTED_AFTER_POST_DELETION = """
+    DELETE FROM reported_posts WHERE post_id = :id
+    """;
+
     private final NamedParameterJdbcTemplate template;
     private final RowMapper<Post> rowMapper;
     private SqlParameterSource params;
@@ -118,8 +126,11 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public void deletePost(Integer id) {
+        //Need to delete post and all of its comments
         params = new MapSqlParameterSource("id", id);
         template.update(DELETE_POST, params);
+        template.update(DELETE_COMMENTS_AFTER_POST_DELETION, params);
+        template.update(DELETE_REPORTED_AFTER_POST_DELETION, params);
     }
 
     @Override
@@ -127,4 +138,5 @@ public class PostDaoImpl implements PostDao {
         params = new MapSqlParameterSource("params", "%" + searchParams + "%");
         return template.query(SELECT_POSTS_LIKE, params, rowMapper);
     }
+
 }
