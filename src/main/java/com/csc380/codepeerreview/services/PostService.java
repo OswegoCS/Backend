@@ -46,10 +46,8 @@ public class PostService {
     // Returns a Post with the given id
     public GetPostByIdResponse getPostsById(Integer id) {
         var response = new GetPostByIdResponse();
-        List<Comment> comments = null;
-        Post post = null;
-        post = postRepo.findById(id);
-        comments = commentRepo.findByPostId(id);
+        Post post = postRepo.findById(id);
+        List<Comment> comments = commentRepo.findByPostId(id);
         response.setPost(post);
         response.setComments(comments);
         return response;
