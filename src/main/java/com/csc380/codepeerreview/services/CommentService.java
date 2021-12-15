@@ -22,8 +22,8 @@ public class CommentService {
         this.commentRepo = commentRepo;
     }
 
-    public void createComment(Comment newComment) {
-        commentRepo.insertComment(newComment);
+    public Comment createComment(Comment newComment) {
+        return commentRepo.insertComment(newComment);
     }
 
     public void deleteComment(Integer id) {

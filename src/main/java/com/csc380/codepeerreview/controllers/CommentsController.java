@@ -32,10 +32,10 @@ public class CommentsController {
     }
 
     @PostMapping(value = "/comments")
-    public void createComment(@RequestBody CreateCommentRequest request) {
+    public Comment createComment(@RequestBody CreateCommentRequest request) {
         Comment comment = new Comment(
             request.getContent(), request.getPostId(), request.getScreenName());
-        commentService.createComment(comment);
+        return commentService.createComment(comment);
     }
 
     @DeleteMapping(value = "/comments/{id}")

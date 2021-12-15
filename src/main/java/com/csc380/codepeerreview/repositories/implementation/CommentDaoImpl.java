@@ -10,12 +10,15 @@ import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 @Repository
 public class CommentDaoImpl implements CommentDao {
@@ -34,7 +37,8 @@ public class CommentDaoImpl implements CommentDao {
 
     final private String INSERT_COMMENT = """
     INSERT INTO comments (post_id, content, user_id, publish_date) 
-    VALUES (:post_id, :content, (SELECT id FROM users WHERE screen_name = :screen_name), :publish_date)""";
+    VALUES (:post_id, :content, (SELECT id FROM users WHERE screen_name = :screen_name), :publish_date) 
+    RETURNING id, post_id, user_id, content, publish_date, (SELECT screen_name FROM users WHERE id=user_id)""";
 
     final private String DELETE_COMMENT = """
     DELETE FROM
@@ -66,6 +70,7 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public List<Comment> findByPostId(Integer id) {
+        try {
         List<Comment> comments = null;
         comments = template.query(
             SELECT_BY_POST_ID, new MapSqlParameterSource("post_id", id), commentMapper);
@@ -74,17 +79,24 @@ public class CommentDaoImpl implements CommentDao {
                 comment.setLikes(new Likes(usersWhoLiked));
         });
         return comments;
+    } catch(EmptyResultDataAccessException e) {
+        return null;
+    } catch(Exception e) {
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     }
 
     @Override
-    public void insertComment(Comment comment) {
+    public Comment insertComment(Comment newComment) {
         params = new MapSqlParameterSource()
-            .addValue("post_id", comment.getPostId())
+            .addValue("post_id", newComment.getPostId())
             .addValue("publish_date", Timestamp.from(Instant.now()))
-            .addValue("content", comment.getContent())
-            .addValue("screen_name", comment.getScreenName());
-        template.update(INSERT_COMMENT, params);
-
+            .addValue("content", newComment.getContent())
+            .addValue("screen_name", newComment.getScreenName());
+        var comment = template.queryForObject(INSERT_COMMENT, params, commentMapper);
+        var usersWhoLiked = getLikes(comment.getId());
+        comment.setLikes(new Likes(usersWhoLiked));
+        return comment;
     }
 
     @Override

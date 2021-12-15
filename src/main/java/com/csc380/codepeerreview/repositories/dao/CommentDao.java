@@ -8,7 +8,7 @@ public interface CommentDao {
 
     List<Comment> findByPostId(Integer id);
 
-    void insertComment(Comment comment);
+    Comment insertComment(Comment comment);
 
     void deleteComment(Integer id);
 
