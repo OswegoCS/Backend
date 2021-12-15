@@ -80,4 +80,9 @@ public class PostController {
     public void deletePost(@PathVariable("id") Integer id) {
         postService.deletePost(id);
     }
+
+    @PutMapping("/posts/report/{id}")
+    public void reportPost(@PathVariable("id") Integer id) {
+        
+    }
 }
