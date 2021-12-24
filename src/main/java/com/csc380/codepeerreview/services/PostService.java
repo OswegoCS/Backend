@@ -36,9 +36,8 @@ public class PostService {
     }
 
     public GetManyPostsResponse getAllPosts() {
-        List<Post> posts = null;
         var response = new GetManyPostsResponse();
-        posts = postRepo.findAll();
+        var posts = postRepo.findAll();
         response.setPosts(posts);
         return response;
     }
