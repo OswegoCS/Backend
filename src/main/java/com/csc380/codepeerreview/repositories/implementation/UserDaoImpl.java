@@ -4,6 +4,8 @@ import com.csc380.codepeerreview.models.Role;
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
 import com.csc380.codepeerreview.repositories.mappers.UserRowMapper;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,15 +23,20 @@ import org.springframework.web.server.ResponseStatusException;
 @Repository
 public class UserDaoImpl implements UserDao {
 
-    private final String SELECT_BY_ID = """
-    SELECT id, screen_name, first_name, last_name, email 
+    private final String SELECT_INSTRUCTOR_BY_COURSE_ID = """
+    SELECT id, screen_name, first_name, last_name, email, course 
     FROM users
-    WHERE id = :id""";
+    WHERE id = (SELECT instructor_id FROM courses WHERE id = :id)""";
 
     private final String SELECT_BY_EMAIL = """
-    SELECT id, screen_name, first_name, last_name, email
+    SELECT id, screen_name, first_name, last_name, email, course
     FROM users 
     WHERE email = :email""";
+
+    private final String SELECT_BY_COURSE = """
+    SELECT id, screen_name, first_name, last_name, email, course
+    FROM users 
+    WHERE course = :course""";
 
     private final String SELECT_ROLES = """
     SELECT user_roles.role_id AS roleId, roles.role_name AS roleName
@@ -49,7 +56,7 @@ public class UserDaoImpl implements UserDao {
     ON CONFLICT (email) DO NOTHING"
     */
     private String insertUsers = 
-    "INSERT INTO users (first_name, last_name, email, screen_name) VALUES ";
+    "INSERT INTO users (first_name, last_name, email, screen_name, course) VALUES ";
 
     private final NamedParameterJdbcTemplate template;
     private final RowMapper<User> userMapper;
@@ -61,20 +68,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findById(Integer id) {
-        try {
-        User user =  template.queryForObject(
-            SELECT_BY_ID, new MapSqlParameterSource("id", id), userMapper);
-            List<Role> roles = template.query(SELECT_ROLES, new MapSqlParameterSource("id", user.getId()), BeanPropertyRowMapper.newInstance(Role.class));
-            user.setRoles(roles);
-        return user;
-        } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No users with id: " + id);
-        }
-        
-    }
-
-    @Override
     public void insertUsers(List<User> users, String type) {
 
         StringBuilder query = new StringBuilder(insertUsers);
@@ -82,6 +75,7 @@ public class UserDaoImpl implements UserDao {
         String lastName = "last_name";
         String email = "email";
         String screenName = "screen_name";
+        String courseName = "course";
         Map<String, Object> headers = new HashMap<String, Object>();
         SqlParameterSource param;
 
@@ -91,12 +85,14 @@ public class UserDaoImpl implements UserDao {
             headers.put(lastName.concat(index), users.get(i).getLastName());
             headers.put(email.concat(index), users.get(i).getEmail());
             headers.put(screenName.concat(index), users.get(i).getEmail().split("@")[0]);
+            headers.put(courseName.concat(index), users.get(i).getCourse());
 
             query.append("(")
             .append(":").append(firstName.concat(index))
-            .append(", ").append(":").append(lastName.concat(index))
-            .append(", ").append(":").append(email.concat(index))
-            .append(", ").append(":").append(screenName.concat(index))
+            .append(", :").append(lastName.concat(index))
+            .append(", :").append(email.concat(index))
+            .append(", :").append(screenName.concat(index))
+            .append(", :").append(courseName.concat(index))
             .append(") ")
             .append(i < (users.size() - 1) ? ", " : "");
         }
@@ -105,7 +101,7 @@ public class UserDaoImpl implements UserDao {
         try{
             template.update(query.toString(), param);
         } catch(Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -120,6 +116,29 @@ public class UserDaoImpl implements UserDao {
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No users with email: " + email);
         } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public List<User> findByCourse(String course) {
+        try{
+            List<User> students = template.query(SELECT_BY_COURSE, new MapSqlParameterSource("course", course), userMapper);
+            return students;
+        } catch(EmptyResultDataAccessException e){
+            //Not getting any results back is fine, just return an empty list
+            return new ArrayList<User>();
+        }catch(Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    public User findCourseInstructor(String course) {
+        try {
+            User instructor = template.queryForObject(SELECT_INSTRUCTOR_BY_COURSE_ID, new MapSqlParameterSource("id", course), BeanPropertyRowMapper.newInstance(User.class));
+            return instructor;
+        } catch(Exception e) {
+            //Throw an exception, if we are not getting an instructor back, there are problems
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

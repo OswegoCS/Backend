@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.annotation.Resource;
 import com.csc380.codepeerreview.models.Post;
+import com.csc380.codepeerreview.models.Role;
 import com.csc380.codepeerreview.models.User;
 import com.csc380.codepeerreview.repositories.dao.PostDao;
 import com.csc380.codepeerreview.repositories.dao.UserDao;
@@ -37,6 +38,13 @@ public class UserService {
         String decodedEmail = email.replace("%40", "");
         User user = userRepo.findByEmail(decodedEmail);
         List<Post> posts = postRepo.findByUserId(user.getId());
+        if(hasRole(user.getRoles(), 2)) {
+            List<User> students = userRepo.findByCourse(user.getCourse());
+            response.setStudents(students);
+        } else {
+            User instructor = userRepo.findCourseInstructor(user.getCourse());
+            response.setInstructor(instructor);
+        }
         response.setUser(user);
         response.setPosts(posts);
         return response;
@@ -57,6 +65,13 @@ public class UserService {
 
     public void createInstructors(List<User> instructors) {
         userRepo.insertUsers(instructors, "instructor");
+    }
+
+    private boolean hasRole(List<Role> roles, int roleId) {
+        for(var role: roles) {
+            if(role.getRoleId() == roleId) return true;
+        }
+        return false;
     }
 
 }
