@@ -15,5 +15,6 @@ public class GetProfileResponse extends BasicResponse {
 
     private User user;
     private List<Post> posts;
-    private List<User> users;
+    private List<User> students;
+    private User instructor;
 }
