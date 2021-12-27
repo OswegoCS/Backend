@@ -46,6 +46,11 @@ public class UserDaoImpl implements UserDao {
     WHERE user_roles.user_id = :id
     """;
 
+    private final String insertStudentRoles = """
+    INSERT INTO user_roles (user_id, role_id) 
+    VALUES 
+    """;
+
     /*Full query looks like this
     INSERT INTO users (first_name, last_name, email, screen_name) 
     VALUES 
@@ -69,13 +74,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void insertUsers(List<User> users, String type) {
-
         StringBuilder query = new StringBuilder(insertUsers);
         String firstName = "first_name";
         String lastName = "last_name";
         String email = "email";
         String screenName = "screen_name";
         String courseName = "course";
+        StringBuilder rolesQuery = new StringBuilder(insertStudentRoles);
         Map<String, Object> headers = new HashMap<String, Object>();
         SqlParameterSource param;
 
@@ -96,10 +101,18 @@ public class UserDaoImpl implements UserDao {
             .append(") ")
             .append(i < (users.size() - 1) ? ", " : "");
         }
-        query.append(" ON CONFLICT (email) DO NOTHING");
+        query.append(" ON CONFLICT (email) DO NOTHING RETURNING id");
         param = new MapSqlParameterSource(headers);
         try{
-            template.update(query.toString(), param);
+            List<Integer> ids = template.query(query.toString(), param, (rs, rowNum) -> (rs.getInt("id")));
+            headers.clear();
+            for(int i = 0; i < ids.size(); i++) {
+                int id = ids.get(i);
+                headers.put("userId".concat(String.valueOf(i)), id);
+                rolesQuery.append("(" + ":userId".concat(String.valueOf(i)) + ", 3)");
+                rolesQuery.append(i < (ids.size() - 1) ? ", " : "");
+            }
+            template.update(rolesQuery.toString(), headers);
         } catch(Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
