@@ -22,10 +22,6 @@ public class PostDaoImpl implements PostDao {
     DELETE FROM posts
     WHERE id = :id""";
 
-    private final String SELECT_ALL_IDS = """
-    SELECT id 
-    FROM posts""";
-
     private final String SELECT_ALL = """
     SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name
     FROM posts 
@@ -82,11 +78,6 @@ public class PostDaoImpl implements PostDao {
     @Override
     public List<Post> findAll() {
         return template.query(SELECT_ALL, rowMapper);
-    }
-
-    @Override
-    public List<String> getIds() {
-        return template.query(SELECT_ALL_IDS, (rs, rowNum) -> String.valueOf(rs.getInt("id")));
     }
 
     @Override

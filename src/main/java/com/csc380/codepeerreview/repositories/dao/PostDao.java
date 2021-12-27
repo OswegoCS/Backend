@@ -17,8 +17,6 @@ public interface PostDao {
 
     void deletePost(Integer id);
 
-    List<String> getIds();
-
     List<Post> searchWithParams(String params);
 
 }

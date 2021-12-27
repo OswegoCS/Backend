@@ -53,11 +53,6 @@ public class PostService {
     }
 
     // Returns a list of all post ids
-    public List<String> getIds() {
-        return postRepo.getIds();
-    }
-
-    // Returns a list of all post ids
     public SearchPostsResponse searchPosts(String params) {
         var response = new SearchPostsResponse();
         String decodedParams = URLDecoder.decode(params, StandardCharsets.UTF_8)

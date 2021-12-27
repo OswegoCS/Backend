@@ -9,7 +9,6 @@ import com.csc380.codepeerreview.responses.SearchPostsResponse;
 import com.csc380.codepeerreview.services.PostService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +49,6 @@ public class PostController {
     }
 
     // Returns a list of all post ids
-    @GetMapping(path = "/posts/id")
-    public List<String> getIds() {
-        return postService.getIds();
-    }
-
-    // Returns a list of all post ids
     @GetMapping(path = "/posts/search/{params}")
     public SearchPostsResponse searchPosts(@PathVariable String params) {
         return postService.searchPosts(params);
@@ -79,10 +72,5 @@ public class PostController {
     @DeleteMapping("/posts/{id}")
     public void deletePost(@PathVariable("id") Integer id) {
         postService.deletePost(id);
-    }
-
-    @PutMapping("/posts/report/{id}")
-    public void reportPost(@PathVariable("id") Integer id) {
-        
     }
 }
