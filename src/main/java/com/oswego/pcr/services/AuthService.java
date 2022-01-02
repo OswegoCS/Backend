@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oswego.pcr.models.UserDetails;
 import com.oswego.pcr.repositories.dao.UserDao;
 import com.oswego.pcr.repositories.implementation.UserDaoImpl;
-
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -28,7 +28,10 @@ import lombok.Setter;
 @Service
 public class AuthService {
 
-    private final String URL = "http://localhost:3000/api/validate";
+    // private final String URL = "http://localhost:3000/api/validate";
+    private final String URL = "http://moxie.cs.oswego.edu:80/api/validate";
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+
     @Resource
     private UserDao userRepo;
     private ObjectMapper objectMapper;
@@ -40,6 +43,7 @@ public class AuthService {
     }
 
     public UserDetails validateToken(String tokenStr) {
+        log.info("Attempting to validate token");
         try {
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost request = new HttpPost(URL);
@@ -56,9 +60,8 @@ public class AuthService {
             var user = userRepo.findByEmail(details.getEmail());
             details.setUser(user);
             return details;
-        } catch (HttpResponseException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         } catch (IOException e) {
+            log.error("Error processing token");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
