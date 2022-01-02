@@ -18,3 +18,4 @@ server:
     whitelabel:
       enabled: false
     path: "/error"
+  port: 7801
