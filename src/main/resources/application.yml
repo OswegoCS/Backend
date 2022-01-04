@@ -2,13 +2,9 @@ app:
   datasource:
     main:
       driver-class-name: org.postgresql.Driver
-      #For running in docker, where PostgreSQL is the custom name of the image
-      #jdbc-url: jdbc:postgresql://kevinmorales/pgdb:5432/postgres
-      #For running locally with separate db
-      jdbc-url: jdbc:postgresql://moxie.cs.oswego.edu:5432/postgres
-      #jdbc-url: jdbc:postgresql://localhost:5432/postgres
-      username: postgres
-      password: "postgresql"
+      jdbc-url: ${SPRING_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
       pool-size: 30
 
 server:
@@ -17,5 +13,4 @@ server:
     include-stacktrace: on_trace_param
     whitelabel:
       enabled: false
-    path: "/error"
   port: 7801
