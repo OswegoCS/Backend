@@ -1,35 +1,31 @@
 package com.oswego.pcr.services;
 
 import java.io.IOException;
-
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.HashMap;
 import javax.annotation.Resource;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oswego.pcr.models.UserDetails;
 import com.oswego.pcr.repositories.dao.UserDao;
 import com.oswego.pcr.repositories.implementation.UserDaoImpl;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-
 @Service
 public class AuthService {
 
-    // private final String URL = "http://localhost:3000/api/validate";
-    private final String URL = "http://moxie.cs.oswego.edu:80/api/validate";
+    // Reading authentication server url from environment variable
+    // Fallback value is to try and use localhost
+    @Value("${authURL:http://localhost:3000/api/validate}")
+    private String URL;
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     @Resource
@@ -43,25 +39,27 @@ public class AuthService {
     }
 
     public UserDetails validateToken(String tokenStr) {
-        log.info("Attempting to validate token");
+        log.info("Attempting to validate token at " + URL);
+        var values = new HashMap<String, String>();
+        values.put("token", tokenStr);
         try {
-            HttpClient httpClient = HttpClientBuilder.create().build();
-            HttpPost request = new HttpPost(URL);
-            var token = new Token(tokenStr);
-            var tokenJson = objectMapper.writeValueAsString(token);
-            StringEntity postingString = new StringEntity(tokenJson);
-            request.setEntity(postingString);
-            request.setHeader("Content-type", "application/json");
-            HttpResponse response = httpClient.execute(request);
-            if (response.getStatusLine().getStatusCode() != 200 && response.getStatusLine().getStatusCode() != 201)
+            String requestBody = objectMapper
+                    .writeValueAsString(values);
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(URL))
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody)).header("Content-Type", "application/json")
+                    .build();
+            HttpResponse<String> response = client.send(request,
+                    HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200 && response.statusCode() != 201)
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-            String responseString = new BasicResponseHandler().handleResponse(response);
-            var details = objectMapper.readValue(responseString, UserDetails.class);
+            var details = objectMapper.readValue(response.body(), UserDetails.class);
             var user = userRepo.findByEmail(details.getEmail());
             details.setUser(user);
             return details;
-        } catch (IOException e) {
-            log.error("Error processing token");
+        } catch (InterruptedException | IOException e) {
+            log.error(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
@@ -71,11 +69,4 @@ public class AuthService {
             return true;
         return false;
     }
-}
-
-@AllArgsConstructor
-@Getter
-@Setter
-class Token {
-    private String token;
 }
