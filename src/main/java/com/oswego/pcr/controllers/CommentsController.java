@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.oswego.pcr.models.Comment;
 import com.oswego.pcr.models.ReportedComment;
-import com.oswego.pcr.models.UserDetails;
+import com.oswego.pcr.models.User;
 import com.oswego.pcr.requests.CreateCommentRequest;
 import com.oswego.pcr.requests.LikeCommentRequest;
 import com.oswego.pcr.requests.ReportContentRequest;
@@ -44,8 +44,8 @@ public class CommentsController {
     @PostMapping(value = "/comments")
     public Comment createComment(@RequestBody CreateCommentRequest request,
             @RequestHeader Map<String, String> headers) {
-        var userDetails = authService.validateToken(headers.get("authorization"));
-        if (!authService.isOwner(request.getScreenName(), userDetails))
+        var user = authService.validateToken(headers.get("authorization"));
+        if (!authService.isOwner(request.getScreenName(), user))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         Comment comment = new Comment(
                 request.getContent(), request.getPostId(), request.getScreenName());
@@ -54,14 +54,14 @@ public class CommentsController {
 
     @DeleteMapping(value = "/comments/{id}")
     public void deleteComment(@PathVariable Integer id, @RequestHeader Map<String, String> headers) {
-        var userDetails = authService.validateToken(headers.get("authorization"));
-        commentService.deleteComment(id, userDetails.getUser().getId());
+        var user = authService.validateToken(headers.get("authorization"));
+        commentService.deleteComment(id, user.getId());
     }
 
     @PutMapping(value = "/comments/report")
     public void reportComment(@RequestBody ReportContentRequest request, @RequestHeader Map<String, String> headers) {
-        var userDetails = authService.validateToken(headers.get("authorization"));
-        var reportedComment = new ReportedComment(request.getId(), userDetails.getUser().getId(), request.getReason(),
+        var user = authService.validateToken(headers.get("authorization"));
+        var reportedComment = new ReportedComment(request.getId(), user.getId(), request.getReason(),
                 "");
         commentService.reportComment(reportedComment);
     }
@@ -74,8 +74,8 @@ public class CommentsController {
 
     @GetMapping(value = "/comments/reported")
     public GetReportedCommentsResponse getReportedComments(@RequestHeader Map<String, String> headers) {
-        var userDetails = authService.validateToken(headers.get("authorization"));
-        canViewReported(userDetails);
+        var user = authService.validateToken(headers.get("authorization"));
+        canViewReported(user);
         return commentService.getReportedComments();
     }
 
@@ -84,9 +84,9 @@ public class CommentsController {
         authService.validateToken(headers.get("authorization"));
     }
 
-    private void canViewReported(UserDetails userDetails) {
-        if (!RoleHelper.hasRole(userDetails.getUser().getRoles(), 1)
-                || !RoleHelper.hasRole(userDetails.getUser().getRoles(), 2))
+    private void canViewReported(User user) {
+        if (!RoleHelper.hasRole(user.getRoles(), 1)
+                || !RoleHelper.hasRole(user.getRoles(), 2))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 

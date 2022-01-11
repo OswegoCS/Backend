@@ -2,7 +2,6 @@ package com.oswego.pcr.controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oswego.pcr.models.User;
-import com.oswego.pcr.models.UserDetails;
 import com.oswego.pcr.requests.CreateStudentsRequest;
 import com.oswego.pcr.responses.GetProfileResponse;
 import com.oswego.pcr.services.AuthService;
@@ -59,8 +58,8 @@ public class UserController {
     @PostMapping(path = "/users/create/instructors")
     public void createInstructors(@RequestBody CreateStudentsRequest request,
             @RequestHeader Map<String, String> headers) {
-        var userDetails = authService.validateToken(headers.get("authorization"));
-        canUploadUsers(userDetails);
+        var user = authService.validateToken(headers.get("authorization"));
+        canUploadUsers(user);
         List<User> instructors = request.getUsers();
         userService.createInstructors(instructors);
     }
@@ -76,9 +75,9 @@ public class UserController {
         userService.createStudents(tempFile);
     }
 
-    private void canUploadUsers(UserDetails userDetails) {
-        if (!RoleHelper.hasRole(userDetails.getUser().getRoles(), 1)
-                || !RoleHelper.hasRole(userDetails.getUser().getRoles(), 2))
+    private void canUploadUsers(User user) {
+        if (!RoleHelper.hasRole(user.getRoles(), 1)
+                || !RoleHelper.hasRole(user.getRoles(), 2))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 }

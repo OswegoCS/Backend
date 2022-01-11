@@ -9,7 +9,7 @@ RUN mvn package
 FROM adoptopenjdk/openjdk15:ubi
 
 ARG JAR_FILE=peer-code-review.jar
-ENV authURL=http://frontend:3000/api/validate
+ENV GOOGLE_CLIENT_ID=204294136183-jcems6ggv1a4j9s0lvnummf1ehga8cg2.apps.googleusercontent.com
 ENV SPRING_DATASOURCE_URL=jdbc:postgresql://pgdb:5432/postgres
 ENV SPRING_DATASOURCE_USERNAME=postgres
 ENV SPRING_DATASOURCE_PASSWORD=postgresql
