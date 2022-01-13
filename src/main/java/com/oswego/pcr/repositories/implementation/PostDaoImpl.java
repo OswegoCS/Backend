@@ -117,7 +117,9 @@ public class PostDaoImpl implements PostDao {
     public void deletePost(Integer id, Integer userId) {
         // Need to delete post and all of its comments
         params = new MapSqlParameterSource().addValue("id", id).addValue("userId", userId);
-        template.update(DELETE_POST, params);
+        var rowsAffected = template.update(DELETE_POST, params);
+        if (rowsAffected == 0)
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         template.update(DELETE_COMMENTS_AFTER_POST_DELETION, params);
         template.update(DELETE_REPORTED_AFTER_POST_DELETION, params);
     }

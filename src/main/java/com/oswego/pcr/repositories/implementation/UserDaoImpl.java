@@ -129,7 +129,7 @@ public class UserDaoImpl implements UserDao {
             user.setRoles(roles);
             return user;
         } catch (EmptyResultDataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No users with email: " + email);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No users with email: " + email);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
