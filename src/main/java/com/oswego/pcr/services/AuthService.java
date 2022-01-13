@@ -1,5 +1,7 @@
 package com.oswego.pcr.services;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 import javax.annotation.Resource;
@@ -23,12 +25,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
-
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
-
-    @Value("${GOOGLE_CLIENT_ID}")
+    @Value("${GOOGLE_CLIENT_ID:}")
     private String CLIENT_ID;
-
     @Resource
     private UserDao userRepo;
 
@@ -40,19 +39,28 @@ public class AuthService {
     public User validateToken(String tokenStr) {
         log.info("Attempting to validate token");
         try {
+            if (tokenStr == null)
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            // Token looks like this: "Bearer ey.....gxp", need to split on space
+            String token = tokenStr.split(" ")[1];
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
                     new GsonFactory())
                             .setAudience(Collections.singletonList(CLIENT_ID))
                             .build();
-            GoogleIdToken idToken = verifier.verify(tokenStr);
-            if (idToken != null) {
-                Payload payload = idToken.getPayload();
-                String email = payload.getEmail();
-                return userRepo.findByEmail(email);
-            }
+            GoogleIdToken idToken = verifier.verify(token);
+            if (idToken == null)
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            Payload payload = idToken.getPayload();
+            String email = payload.getEmail();
+            String picture = (String) payload.get("picture");
+            var user = userRepo.findByEmail(email);
+            user.setPicture(picture);
+            return user;
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (GeneralSecurityException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        } catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
