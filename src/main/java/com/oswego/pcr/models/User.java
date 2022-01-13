@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class User {
-
     private int id;
     private String firstName;
     private String lastName;
@@ -17,4 +16,5 @@ public class User {
     private String screenName;
     private String course;
     private List<Role> roles;
+    private String picture;
 }
