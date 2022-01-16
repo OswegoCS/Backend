@@ -1,7 +1,16 @@
 FROM maven:3.6.3 AS maven
 
-WORKDIR /usr/src/app
-COPY . /usr/src/app
+ENV HOME=/usr/src/app
+
+RUN mkdir -p ${HOME}
+
+WORKDIR ${HOME}
+
+ADD pom.xml ${HOME}
+
+RUN ["/usr/local/bin/mvn-entrypoint.sh", "mvn", "verify", "clean", "--fail-never"]
+
+COPY . ${HOME}
 # Compile and package the application to an executable JAR
 RUN mvn package 
 
