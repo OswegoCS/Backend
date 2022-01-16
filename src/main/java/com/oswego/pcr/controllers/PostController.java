@@ -53,16 +53,16 @@ public class PostController {
     @GetMapping(path = "/posts/{id}")
     public GetPostByIdResponse getPostsById(@PathVariable("id") Integer id,
             @RequestHeader Map<String, String> headers) {
-        var user = authService.validateToken(headers.get("authorization"));
+        var currentUser = authService.validateToken(headers.get("authorization"));
         var response = postService.getPostsById(id);
-        response.setOwner(response.getPost().getUserId() == user.getId());
+        response.setOwner(response.getPost().getUserId() == currentUser.getId());
         return response;
     }
 
     @PostMapping("/posts")
     public ObjectNode createPost(@RequestBody CreatePostRequest request, @RequestHeader Map<String, String> headers) {
-        var userDetails = authService.validateToken(headers.get("authorization"));
-        if (!authService.isOwner(request.getScreenName(), userDetails))
+        var currentUser = authService.validateToken(headers.get("authorization"));
+        if (!authService.isOwner(request.getScreenName(), currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         Post post = new Post(
                 request.getScreenName(), request.getTitle(), request.getContent(), request.getCode());
@@ -71,8 +71,8 @@ public class PostController {
 
     @PutMapping("/posts/{id}")
     public void editPost(@RequestBody EditPostRequest request, @RequestHeader Map<String, String> headers) {
-        var user = authService.validateToken(headers.get("authorization"));
-        if (!authService.isOwner(request.getScreenName(), user))
+        var currentUser = authService.validateToken(headers.get("authorization"));
+        if (!authService.isOwner(request.getScreenName(), currentUser))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         Post post = new Post(
                 request.getId(), request.getScreenName(), request.getTitle(),
@@ -82,8 +82,14 @@ public class PostController {
 
     @DeleteMapping("/posts/{id}")
     public void deletePost(@RequestHeader Map<String, String> headers, @PathVariable("id") Integer id) {
-        var user = authService.validateToken(headers.get("authorization"));
+        var currentUser = authService.validateToken(headers.get("authorization"));
         // Only the owner of a post, admin, or instructor can delete
-        postService.deletePost(id, user.getId());
+        postService.deletePost(id, currentUser.getId());
+    }
+
+    @PutMapping("/posts/report/{id}")
+    public void reportPost(@RequestHeader Map<String, String> headers, @PathVariable("id") Integer postId) {
+        var currentUser = authService.validateToken(headers.get("authorization"));
+        postService.reportPost(postId, currentUser.getId());
     }
 }
