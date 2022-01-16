@@ -106,14 +106,17 @@ public class UserDaoImpl implements UserDao {
         param = new MapSqlParameterSource(headers);
         try {
             List<Integer> ids = template.query(query.toString(), param, (rs, rowNum) -> (rs.getInt("id")));
-            headers.clear();
-            for (int i = 0; i < ids.size(); i++) {
-                int id = ids.get(i);
-                headers.put("userId".concat(String.valueOf(i)), id);
-                rolesQuery.append("(" + ":userId".concat(String.valueOf(i)) + ", 3)");
-                rolesQuery.append(i < (ids.size() - 1) ? ", " : "");
+            // If no new students were created, then there are no roles to add
+            if (ids.size() > 0) {
+                headers.clear();
+                for (int i = 0; i < ids.size(); i++) {
+                    int id = ids.get(i);
+                    headers.put("userId".concat(String.valueOf(i)), id);
+                    rolesQuery.append("(" + ":userId".concat(String.valueOf(i)) + ", 3)");
+                    rolesQuery.append(i < (ids.size() - 1) ? ", " : "");
+                }
+                template.update(rolesQuery.toString(), headers);
             }
-            template.update(rolesQuery.toString(), headers);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
