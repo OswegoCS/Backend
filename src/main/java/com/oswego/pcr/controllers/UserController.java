@@ -1,6 +1,5 @@
 package com.oswego.pcr.controllers;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oswego.pcr.models.User;
 import com.oswego.pcr.requests.CreateStudentsRequest;
 import com.oswego.pcr.responses.GetProfileResponse;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -47,12 +45,6 @@ public class UserController {
     public GetProfileResponse getProfile(@RequestHeader Map<String, String> headers) {
         var userDetails = authService.validateToken(headers.get("authorization"));
         return userService.getProfile(userDetails.getEmail());
-    }
-
-    @GetMapping(path = "/users/validate/{email}")
-    public ObjectNode validateUser(@PathVariable String email, @RequestHeader Map<String, String> headers) {
-        var userDetails = authService.validateToken(headers.get("authorization"));
-        return userService.validateUser(userDetails.getEmail());
     }
 
     @PostMapping(path = "/users/create/instructors")
