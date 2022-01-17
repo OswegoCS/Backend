@@ -64,4 +64,12 @@ public class PostService {
     public void deletePost(Integer id, Integer userId) {
         postRepo.deletePost(id, userId);
     }
+
+    public void reportPost(Integer postId, Integer userId, String reason) {
+        postRepo.reportPost(postId, userId, reason);
+    }
+
+    public List<Post> findReportedPosts() {
+        return postRepo.findReportedPosts();
+    }
 }

@@ -18,4 +18,8 @@ public interface PostDao {
 
     void deletePost(Integer id, Integer userId);
 
+    void reportPost(Integer id, Integer userId, String reason);
+
+    List<Post> findReportedPosts();
+
 }

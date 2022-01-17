@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.oswego.pcr.models.Post;
 import com.oswego.pcr.requests.CreatePostRequest;
 import com.oswego.pcr.requests.EditPostRequest;
+import com.oswego.pcr.requests.ReportRequest;
 import com.oswego.pcr.responses.GetManyPostsResponse;
 import com.oswego.pcr.responses.GetPostByIdResponse;
 import com.oswego.pcr.services.AuthService;
@@ -87,9 +88,10 @@ public class PostController {
         postService.deletePost(id, currentUser.getId());
     }
 
-    @PutMapping("/posts/report/{id}")
-    public void reportPost(@RequestHeader Map<String, String> headers, @PathVariable("id") Integer postId) {
+    @PostMapping("/posts/report/{id}")
+    public void reportPost(@RequestHeader Map<String, String> headers, @PathVariable("id") Integer postId,
+            @RequestBody ReportRequest request) {
         var currentUser = authService.validateToken(headers.get("authorization"));
-        postService.reportPost(postId, currentUser.getId());
+        postService.reportPost(postId, currentUser.getId(), request.getReason());
     }
 }

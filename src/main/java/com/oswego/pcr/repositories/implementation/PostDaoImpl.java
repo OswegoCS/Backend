@@ -124,4 +124,32 @@ public class PostDaoImpl implements PostDao {
         template.update(DELETE_REPORTED_AFTER_POST_DELETION, params);
     }
 
+    @Override
+    public void reportPost(Integer id, Integer userId, String reason) {
+        String insertReportedPost = """
+                INSERT INTO reported_posts (post_id, reason, reporter_id)
+                VALUES ((SELECT id FROM posts WHERE id=:id), :reason, :user_id)
+                """;
+        params = new MapSqlParameterSource().addValue("id", id).addValue("userId", userId).addValue("reason", reason);
+        try {
+            template.update(insertReportedPost, params);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<Post> findReportedPosts() {
+        String insertReportedPost = """
+                SELECT posts.id, title, content, publish_date, code, posts.user_id, screen_name
+                FROM posts
+                INNER JOIN users ON posts.user_id = users.id
+                ORDER BY publish_date DESC""";
+
+        try {
+            return template.query(insertReportedPost, params, rowMapper);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
