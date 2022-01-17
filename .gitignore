@@ -9,3 +9,6 @@
 .vscode
 .DS_Store
 .idea
+Dev.Dockerfile
+Dockerfile
+docker-compose.yml
